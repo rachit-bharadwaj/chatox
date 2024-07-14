@@ -4,7 +4,7 @@
   "main": "index.ts",
   "scripts": {
     "dev": "nodemon",
-    "start": "cd build && npm install && node index.js",
+    "start": "npm install && node index.js",
     "build": "npm i && tsc && cp package.json build/"
   },
   "keywords": [],
