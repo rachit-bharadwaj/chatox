@@ -1,15 +1,18 @@
 import type { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
-import User from "../database/models/User.schema.ts";
+import User from "../database/models/User.schema";
 import dotenv from "dotenv";
+import connectDB from "../database/connection/mongoose";
 
 dotenv.config();
 
 const secretKey = process.env.JWT_KEY!;
 
 export const register = async (req: Request, res: Response) => {
-  const { name, username, email, password } = req.body;
+  await connectDB();
+
+  const { name, userName, email, password } = req.body;
 
   // check if user with same email already exists
   const userExists = await User.findOne({ email });
@@ -24,7 +27,7 @@ export const register = async (req: Request, res: Response) => {
   // create new user
   const newUser = new User({
     name,
-    username,
+    userName,
     email,
     password: hashedPassword,
   });
@@ -35,6 +38,8 @@ export const register = async (req: Request, res: Response) => {
 };
 
 export const login = async (req: Request, res: Response) => {
+  await connectDB();
+
   const { emailOrUsername, password } = req.body;
 
   // check if user exists

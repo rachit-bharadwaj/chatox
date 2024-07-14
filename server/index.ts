@@ -5,7 +5,7 @@ import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 
 // routes
-import authRoutes from "./routes/auth.ts";
+import authRoutes from "./routes/auth";
 
 dotenv.config();
 
