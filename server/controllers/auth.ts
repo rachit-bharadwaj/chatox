@@ -1,0 +1,57 @@
+import type { Request, Response } from "express";
+import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
+import User from "../database/models/User.schema.ts";
+import dotenv from "dotenv";
+
+dotenv.config();
+
+const secretKey = process.env.JWT_KEY!;
+
+export const register = async (req: Request, res: Response) => {
+  const { name, username, email, password } = req.body;
+
+  // check if user with same email already exists
+  const userExists = await User.findOne({ email });
+  if (userExists) {
+    return res.status(400).json({ message: "User already exists" });
+  }
+
+  // hash password with salt
+  const salt = await bcrypt.genSalt(10);
+  const hashedPassword = await bcrypt.hash(password, salt);
+
+  // create new user
+  const newUser = new User({
+    name,
+    username,
+    email,
+    password: hashedPassword,
+  });
+
+  // save user
+  await newUser.save();
+  res.status(201).json({ message: "User created successfully" });
+};
+
+export const login = async (req: Request, res: Response) => {
+  const { emailOrUsername, password } = req.body;
+
+  // check if user exists
+  const user = await User.findOne({
+    $or: [{ email: emailOrUsername }, { username: emailOrUsername }],
+  });
+  if (!user) {
+    return res.status(404).json({ message: "User not found" });
+  }
+
+  // check if password is correct
+  const isMatch = await bcrypt.compare(password, user.password);
+  if (!isMatch) {
+    return res.status(401).json({ message: "Invalid credentials" });
+  }
+
+  // generate JWT token
+  const token = jwt.sign({ userId: user._id }, secretKey, { expiresIn: "7d" });
+  res.status(200).json({ token });
+};

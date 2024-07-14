@@ -36,13 +36,6 @@ const UserSchema = new Schema(
       type: String,
       default: "",
     },
-
-    blogs: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "Blog",
-      },
-    ],
   },
 
   { timestamps: true }

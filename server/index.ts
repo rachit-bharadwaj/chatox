@@ -1,20 +1,28 @@
 import express from "express";
-import bodyParser from "body-parser";
 import dotenv from "dotenv";
 import cors from "cors";
+import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 
 // routes
-// import userRoutes from "./routes/user.js";
+import authRoutes from "./routes/auth.ts";
 
 dotenv.config();
 
 const app = express();
 
+app.use(
+  cors({
+    origin: [process.env.CLIENT_URL!],
+    credentials: true,
+  })
+);
+app.use(cookieParser());
+app.use(express.json());
 app.use(bodyParser.json());
 
 // ------- Routes and controllers ------
-// app.use("/api/auth", authRoutes);
+app.use("/api/auth", authRoutes);
 
 // Start the server
 const PORT = process.env.PORT || 5000;
