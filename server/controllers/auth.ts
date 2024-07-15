@@ -44,7 +44,7 @@ export const login = async (req: Request, res: Response) => {
 
   // check if user exists
   const user = await User.findOne({
-    $or: [{ email: emailOrUsername }, { username: emailOrUsername }],
+    $or: [{ email: emailOrUsername }, { userName: emailOrUsername }],
   });
   if (!user) {
     return res.status(404).json({ message: "User not found" });

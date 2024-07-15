@@ -1,4 +1,5 @@
 import { ChangeEvent, useState } from "react";
+// import axios from "axios";
 
 // locals
 import { User } from "../../../types";
@@ -7,6 +8,8 @@ import { User } from "../../../types";
 import { BiSolidUserBadge } from "react-icons/bi";
 import { HiLockClosed } from "react-icons/hi";
 import { IoEye, IoEyeOff } from "react-icons/io5";
+import { apiClient } from "../../lib/apiClient";
+import { LOGIN_ROUTE } from "../../constants";
 
 export default function Login() {
   const [loginData, setLoginData] = useState<User>({
@@ -16,8 +19,30 @@ export default function Login() {
 
   const [showPassword, setShowPassword] = useState(false);
 
+  const handleSubmit = async (e: ChangeEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    try {
+      console.log("processing");
+      console.log(loginData);
+
+      const res = await apiClient.post(LOGIN_ROUTE, loginData, {
+        withCredentials: true,
+      });
+
+      const resData = await res.data;
+
+      console.log(resData);
+    } catch (error: unknown) {
+      console.log(error);
+    }
+  };
+
   return (
-    <form className="shadow p-3 rounded flex flex-col gap-5">
+    <form
+      onSubmit={handleSubmit}
+      className="shadow p-3 rounded flex flex-col gap-5"
+    >
       <div className="flex gap-2 border rounded py-2 px-3">
         <BiSolidUserBadge className="text-2xl text-gray-400" />
         <input
@@ -25,7 +50,7 @@ export default function Login() {
           placeholder="Email or username"
           className="flex-1 outline-none"
           onChange={(e: ChangeEvent<HTMLInputElement>) =>
-            setLoginData({ ...loginData, userName: e.target.value })
+            setLoginData({ ...loginData, emailOrUsername: e.target.value })
           }
         />
       </div>
@@ -49,7 +74,10 @@ export default function Login() {
         </button>
       </div>
 
-      <button className="bg-gradient-blue text-white py-2 rounded font-bold text-lg">
+      <button
+        type="submit"
+        className="bg-gradient-blue text-white py-2 rounded font-bold text-lg"
+      >
         Login
       </button>
     </form>

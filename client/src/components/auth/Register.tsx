@@ -1,5 +1,7 @@
 import { ChangeEvent, useState } from "react";
 
+import axios from "axios"
+
 // locals
 import { User } from "../../../types";
 
@@ -22,8 +24,35 @@ export default function Register() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+  const handleSubmit = async (e: ChangeEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const data = {
+      name: registerData.name,
+      userName: registerData.userName,
+      email: registerData.email,
+      password: registerData.password,
+    };
+
+    try {
+      console.log("processing");
+
+      const res = await axios.post(
+        "http://localhost:5000/api/auth/register",
+        data
+      );
+      const resData = await res.data;
+      console.log(resData);
+    } catch (error: unknown) {
+      console.log(error);
+    }
+  };
+
   return (
-    <form className="shadow p-3 rounded flex flex-col gap-5">
+    <form
+      onSubmit={handleSubmit}
+      className="shadow p-3 rounded flex flex-col gap-5"
+    >
       <div className="flex gap-2 border rounded py-2 px-3">
         <TiUser className="text-2xl text-gray-400" />
         <input

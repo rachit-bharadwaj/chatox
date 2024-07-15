@@ -6,6 +6,7 @@ import cookieParser from "cookie-parser";
 
 // routes
 import authRoutes from "./routes/auth";
+import userRoutes from "./routes/user";
 
 dotenv.config();
 
@@ -23,6 +24,7 @@ app.use(bodyParser.json());
 
 // ------- Routes and controllers ------
 app.use("/api/auth", authRoutes);
+app.use("/api/user", userRoutes);
 
 // Start the server
 const PORT = process.env.PORT || 5000;
