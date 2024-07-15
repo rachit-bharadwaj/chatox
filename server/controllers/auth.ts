@@ -58,5 +58,22 @@ export const login = async (req: Request, res: Response) => {
 
   // generate JWT token
   const token = jwt.sign({ userId: user._id }, secretKey, { expiresIn: "7d" });
-  res.status(200).json({ token });
+
+  res.cookie("token", token);
+
+  return res.status(200).json({ user });
+};
+
+export const getUserInfo = async (req: Request, res: Response) => {
+  await connectDB();
+
+  const { userId } = req.body;
+
+  const user = await User.findById(userId);
+
+  if (!user) {
+    return res.status(404).json({ message: "User not found" });
+  }
+
+  return res.status(200).json({ user });
 };

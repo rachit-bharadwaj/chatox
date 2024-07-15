@@ -3,7 +3,7 @@ import { ChangeEvent, useState } from "react";
 import axios from "axios"
 
 // locals
-import { User } from "../../../types";
+import { User } from "../../types";
 
 // icons
 import { TiUser } from "react-icons/ti";

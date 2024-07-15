@@ -1,17 +1,26 @@
+// react
 import { ChangeEvent, useState } from "react";
-// import axios from "axios";
+import { useNavigate } from "react-router-dom";
+
+import axios from "axios";
 
 // locals
-import { User } from "../../../types";
+import { User } from "../../types";
+// import { apiClient } from "../../utils/apiClient";
+// import { LOGIN_ROUTE } from "../../constants";
+import useAppStore from "../../store";
 
 // icons
 import { BiSolidUserBadge } from "react-icons/bi";
 import { HiLockClosed } from "react-icons/hi";
 import { IoEye, IoEyeOff } from "react-icons/io5";
-import { apiClient } from "../../lib/apiClient";
-import { LOGIN_ROUTE } from "../../constants";
 
 export default function Login() {
+
+  const {setUserData} = useAppStore()
+
+  const navigate = useNavigate();
+
   const [loginData, setLoginData] = useState<User>({
     emailOrUsername: "",
     password: "",
@@ -23,16 +32,19 @@ export default function Login() {
     e.preventDefault();
 
     try {
-      console.log("processing");
-      console.log(loginData);
+      // const res = await apiClient.post(LOGIN_ROUTE, loginData, {
+      //   withCredentials: true,
+      // });
 
-      const res = await apiClient.post(LOGIN_ROUTE, loginData, {
-        withCredentials: true,
-      });
+      const res = await axios.post(
+        "https://chatox-vzh5.onrender.com/api/auth/login",
+        loginData,
+        { withCredentials: true }
+      );
 
       const resData = await res.data;
-
-      console.log(resData);
+      setUserData(resData.user);
+      if (resData.user) navigate("/");
     } catch (error: unknown) {
       console.log(error);
     }

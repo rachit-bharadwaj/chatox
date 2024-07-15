@@ -1,7 +1,7 @@
-
+import useAppStore from "../store";
 
 export default function Home() {
-  return (
-    <div>Home</div>
-  )
+  const { userData } = useAppStore();
+
+  return <div>hello {userData.name}</div>;
 }

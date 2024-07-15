@@ -16,7 +16,7 @@ export default function Auth() {
         Let&apos;s get started
       </header>
 
-      <Tabs defaultValue="register" className="w-full my-10 mx-auto max-w-xs">
+      <Tabs defaultValue="login" className="w-full my-10 mx-auto max-w-xs">
         <TabsList className="w-full flex justify-evenly">
           <TabsTrigger value="login" className="w-full">
             Login
