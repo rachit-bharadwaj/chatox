@@ -2,12 +2,10 @@
 import { ChangeEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import axios from "axios";
-
 // locals
 import { User } from "../../types";
-// import { apiClient } from "../../utils/apiClient";
-// import { LOGIN_ROUTE } from "../../constants";
+import { apiClient } from "../../utils/apiClient";
+import { LOGIN_ROUTE } from "../../constants";
 import useAppStore from "../../store";
 
 // icons
@@ -16,8 +14,7 @@ import { HiLockClosed } from "react-icons/hi";
 import { IoEye, IoEyeOff } from "react-icons/io5";
 
 export default function Login() {
-
-  const {setUserData} = useAppStore()
+  const { setUserData } = useAppStore();
 
   const navigate = useNavigate();
 
@@ -32,15 +29,9 @@ export default function Login() {
     e.preventDefault();
 
     try {
-      // const res = await apiClient.post(LOGIN_ROUTE, loginData, {
-      //   withCredentials: true,
-      // });
-
-      const res = await axios.post(
-        "https://chatox-vzh5.onrender.com/api/auth/login",
-        loginData,
-        { withCredentials: true }
-      );
+      const res = await apiClient.post(LOGIN_ROUTE, loginData, {
+        withCredentials: true,
+      });
 
       const resData = await res.data;
       setUserData(resData.user);
