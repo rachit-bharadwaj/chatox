@@ -3,6 +3,10 @@ import dotenv from "dotenv";
 import cors from "cors";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
+import http from "http";
+
+// socket io
+import setupSocket from "./socket";
 
 // routes
 import authRoutes from "./routes/auth";
@@ -28,8 +32,14 @@ app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/contact", contactRoutes);
 
+// Create HTTP server
+const server = http.createServer(app);
+
+// Setup Socket.IO with the server
+setupSocket(server);
+
 // Start the server
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);
 });

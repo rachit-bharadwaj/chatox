@@ -4,6 +4,7 @@ import { ChangeEvent, useRef, useState } from "react";
 import { User } from "../../types";
 import { dummyChatPreviews, SEARCH_ROUTE } from "../../constants";
 import { apiClient } from "../../utils/apiClient";
+import useAppStore from "../../store";
 
 // icons
 import { TiUser } from "react-icons/ti";
@@ -11,7 +12,7 @@ import { HiMiniMagnifyingGlass } from "react-icons/hi2";
 import { ImCross } from "react-icons/im";
 
 export default function ChatList() {
-  // const [chats, setChats] = useState<ChatPreview[]>()
+  const { setSelectedChatData } = useAppStore();
 
   const [searchDropDown, setSearchDropDown] = useState(false);
   const [searchList, setSearchList] = useState<User[]>([]);
@@ -25,13 +26,11 @@ export default function ChatList() {
       setSearchResLoading(true);
 
       if (searchTerm.length > 0) {
-        console.log(searchTerm);
         const res = await apiClient.post(
           SEARCH_ROUTE,
           { searchTerm },
           { withCredentials: true }
         );
-        console.log(res.data);
         const resData = await res.data;
 
         setSearchList(resData.contacts);
@@ -49,6 +48,15 @@ export default function ChatList() {
     if (searchInputRef.current) {
       searchInputRef.current.value = "";
     }
+  };
+
+  const selectContact = (contact: User) => {
+    setSearchDropDown(false);
+    setSearchList([]);
+    if (searchInputRef.current) {
+      searchInputRef.current.value = "";
+    }
+    setSelectedChatData(contact);
   };
 
   return (
@@ -83,7 +91,8 @@ export default function ChatList() {
           {searchList?.map((contact) => (
             <div
               key={contact._id}
-              className="flex p-3 border-b items-center gap-3"
+              className="flex p-3 border-b items-center gap-3 cursor-pointer hover:bg-gray-50"
+              onClick={() => selectContact(contact)}
             >
               <div>
                 {contact.profilePicture ? (
