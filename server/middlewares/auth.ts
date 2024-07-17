@@ -7,17 +7,14 @@ export const verifyToken = async (
   next: NextFunction
 ) => {
   const token = await req.cookies.token;
-  console.log(req)
-  console.log(req.body)
-  
+
   if (!token) {
-    return res.status(401).json({ message: "Token not found" });
+    return res.status(401).json({ message: "Token not found", req });
   }
 
   try {
     jwt.verify(token, process.env.JWT_KEY!, async (err: any, decoded: any) => {
       if (err) return res.status(401).json({ message: "Unauthorized" });
-
 
       req.body.userId = decoded.userId;
 
