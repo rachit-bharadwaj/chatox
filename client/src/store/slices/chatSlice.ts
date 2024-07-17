@@ -1,13 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { SetChat, ChatPreview, User } from "../../types";
+import { SetChat, ChatPreview, Message, User } from "../../types";
 
 export const createChatSlice = (set: SetChat, get: any) => ({
-  selectedChatData: <User>{},
-  selectedChatMessages: [] as object[],
+  selectedChatData: undefined as User | undefined,
+  selectedChatMessages: [] as Message[],
   chatPreviews: [] as ChatPreview[],
 
   setSelectedChatData: (data: object) => set({ selectedChatData: data }),
-  setSelectedChatMessages: (data: object[]) => set({ selectedChatMessages: data }),
+  setSelectedChatMessages: (data: Message[]) =>
+    set({ selectedChatMessages: data }),
   setChatPreviews: (previews: ChatPreview[]) => set({ chatPreviews: previews }),
 
   closeChat: () => {
@@ -18,7 +19,7 @@ export const createChatSlice = (set: SetChat, get: any) => ({
     });
   },
 
-  addMessage: (message: any) => {
+  addMessage: (message: Message) => {
     const selectedChatMessages = get().selectedChatMessages;
 
     if (!Array.isArray(selectedChatMessages)) {
@@ -36,16 +37,8 @@ export const createChatSlice = (set: SetChat, get: any) => ({
         ...selectedChatMessages,
         {
           ...message,
-          sender: {
-            name: message.sender.name,
-            profilePicture: message.sender.profilePicture,
-            _id: message.sender._id,
-          },
-          receiver: {
-            name: message.receiver.name,
-            profilePicture: message.receiver.profilePicture,
-            _id: message.receiver._id,
-          },
+          receiver: message.receiver._id,
+          sender: message.sender._id,
         },
       ],
     });

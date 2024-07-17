@@ -33,3 +33,13 @@ export type ChatPreview = {
   lastMessageTime: string;
   avatar: string;
 };
+
+export type Message = {
+  _id: string;
+  sender:  string;
+  receiver: string | object;
+  messageType: string;
+  message?: string;
+  fileUrl?: string;
+  timestamp: string;
+};

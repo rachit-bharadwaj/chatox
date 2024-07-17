@@ -8,7 +8,15 @@ import {
 } from "../components/ui/resizable";
 
 // components
-import { ChatList, ChatScreen } from "../components/chat";
+import {
+  ChatInputBar,
+  ChatList,
+  ChatScreenHeader,
+  Messages,
+} from "../components/chat";
+
+// containers
+import { ChatScreen } from "../containers";
 
 export default function Home() {
   const [chatLayoutSize, setChatLayoutSize] = useState<number[]>([20, 80]);
@@ -40,7 +48,11 @@ export default function Home() {
       </ResizablePanel>
       <ResizableHandle withHandle />
       <ResizablePanel defaultSize={chatLayoutSize[1]}>
-        <ChatScreen />
+        <ChatScreen>
+          <ChatScreenHeader />
+          <Messages />
+          <ChatInputBar />
+        </ChatScreen>
       </ResizablePanel>
     </ResizablePanelGroup>
   );
