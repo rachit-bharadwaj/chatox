@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { SetChat, ChatPreview, User } from "../../types";
 
 export const createChatSlice = (set: SetChat, get: any) => ({

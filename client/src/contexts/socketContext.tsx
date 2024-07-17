@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { createContext, ReactNode, useEffect, useRef } from "react";
 import { io, Socket } from "socket.io-client";
 import useAppStore from "../store";
