@@ -21,7 +21,6 @@ app.use(
   cors({
     origin: [process.env.CLIENT_URL!],
     credentials: true,
-    exposedHeaders: ["Set-Cookie"],
     methods: ["GET", "POST", "PUT", "DELETE"],
   })
 );
