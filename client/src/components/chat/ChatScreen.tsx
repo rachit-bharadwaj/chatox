@@ -11,17 +11,31 @@ import { MdAttachFile } from "react-icons/md";
 import { RiEmojiStickerLine } from "react-icons/ri";
 import { IoSend } from "react-icons/io5";
 import { cn } from "../../lib/utils";
+import { useSocket } from "../../contexts/useSocket";
 
 export default function ChatScreen() {
-  const { selectedChatData, closeChat } = useAppStore();
-
+  const { selectedChatData, closeChat, userData } = useAppStore();
   const [emojiPicker, setEmojiPicker] = useState(false);
-
   const [message, setMessage] = useState("");
+  const socket = useSocket();
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const addEmoji = (emoji: any) => {
     setMessage(message + emoji.emoji);
+  };
+
+  const sendMessage = async () => {
+    if (!selectedChatData?._id) {
+      console.error("No selected chat data");
+      return;
+    }
+
+    socket?.emit("sendMessage", {
+      sender: userData._id,
+      receiver: selectedChatData._id,
+      message,
+      messageType: "text",
+    });
+    setMessage("");
   };
 
   return (
@@ -88,7 +102,10 @@ export default function ChatScreen() {
               </div>
             </div>
 
-            <button className="bg-white p-3 h-12 w-12 min-h-fit text-center rounded-full shadow">
+            <button
+              className="bg-white p-3 h-12 w-12 min-h-fit text-center rounded-full shadow"
+              onClick={sendMessage}
+            >
               <IoSend className="text-green-500 text-2xl" />
             </button>
           </div>

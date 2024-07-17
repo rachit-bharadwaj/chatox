@@ -6,9 +6,9 @@ import { createChatSlice } from "./slices/chatSlice";
 // types
 import { AppState } from "../types";
 
-const useAppStore = create<AppState>((set) => ({
+const useAppStore = create<AppState>((set, get) => ({
   ...createAuthSlice(set),
-  ...createChatSlice(set),
+  ...createChatSlice(set, get),
 }));
 
 export default useAppStore;
