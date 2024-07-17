@@ -1,21 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { SetChat, ChatPreview, Message, User } from "../../types";
+import { SetChat, Message, Contact } from "../../types";
 
 export const createChatSlice = (set: SetChat, get: any) => ({
-  selectedChatData: undefined as User | undefined,
+  selectedChatData: undefined as Contact | undefined,
   selectedChatMessages: [] as Message[],
-  chatPreviews: [] as ChatPreview[],
 
-  setSelectedChatData: (data: object) => set({ selectedChatData: data }),
+  setSelectedChatData: (data: Contact) => set({ selectedChatData: data }),
   setSelectedChatMessages: (data: Message[]) =>
     set({ selectedChatMessages: data }),
-  setChatPreviews: (previews: ChatPreview[]) => set({ chatPreviews: previews }),
 
   closeChat: () => {
     set({
       selectedChatData: undefined,
       selectedChatMessages: [],
-      chatPreviews: [],
     });
   },
 

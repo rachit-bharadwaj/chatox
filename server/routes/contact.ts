@@ -1,7 +1,7 @@
 import { Router } from "express";
 
 // controllers
-import { search } from "../controllers/contact";
+import { getContacts, search } from "../controllers/contact";
 
 // middlewares
 import { verifyToken } from "../middlewares/auth";
@@ -9,5 +9,6 @@ import { verifyToken } from "../middlewares/auth";
 const contactRoutes = Router();
 
 contactRoutes.post("/search", verifyToken, search);
+contactRoutes.get("/get-contacts", verifyToken, getContacts);
 
 export default contactRoutes;

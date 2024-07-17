@@ -1,8 +1,8 @@
-import { ChangeEvent, useRef, useState } from "react";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
 
 // locals
-import { User } from "../../types";
-import { dummyChatPreviews, SEARCH_ROUTE } from "../../constants";
+import { Contact } from "../../types";
+import { GET_CONTACTS, SEARCH_ROUTE } from "../../constants";
 import { apiClient } from "../../utils/apiClient";
 import useAppStore from "../../store";
 
@@ -10,14 +10,16 @@ import useAppStore from "../../store";
 import { TiUser } from "react-icons/ti";
 import { HiMiniMagnifyingGlass } from "react-icons/hi2";
 import { ImCross } from "react-icons/im";
+import moment from "moment";
 
 export default function ChatList() {
-  const { setSelectedChatData } = useAppStore();
+  const { setSelectedChatData, selectedChatData } = useAppStore();
 
   const [searchDropDown, setSearchDropDown] = useState(false);
-  const [searchList, setSearchList] = useState<User[]>([]);
+  const [searchList, setSearchList] = useState<Contact[]>([]);
   const [searchResLoading, setSearchResLoading] = useState(false);
-  // const [chatListLoading, setChatListLoading] = useState(false);
+
+  const [contactList, setContactList] = useState<Contact[]>([]);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   const handleContactSearch = async (searchTerm: string) => {
@@ -50,13 +52,46 @@ export default function ChatList() {
     }
   };
 
-  const selectContact = (contact: User) => {
+  const selectContact = (contact: Contact) => {
     setSearchDropDown(false);
     setSearchList([]);
     if (searchInputRef.current) {
       searchInputRef.current.value = "";
     }
     setSelectedChatData(contact);
+  };
+
+  useEffect(() => {
+    const fetchContacts = async () => {
+      try {
+        const res = await apiClient.get(GET_CONTACTS, {
+          withCredentials: true,
+        });
+        const resData = await res.data;
+        console.log(resData);
+        setContactList(resData.contacts);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchContacts();
+  }, []);
+
+  const formatLastMessageTime = (timestamp: string) => {
+    const now = moment();
+    const messageTime = moment(timestamp);
+
+    if (now.isSame(messageTime, "day")) {
+      // If the message was sent today
+      return messageTime.format("h:mm A");
+    } else if (now.subtract(1, "days").isSame(messageTime, "day")) {
+      // If the message was sent yesterday
+      return `Yesterday, ${messageTime.format("h:mm A")}`;
+    } else {
+      // If the message was sent earlier
+      return messageTime.format("MMM D, h:mm A");
+    }
   };
 
   return (
@@ -117,21 +152,24 @@ export default function ChatList() {
         </>
       ) : (
         <div>
-          {dummyChatPreviews.map((chat) => (
+          {contactList.map((contact: Contact) => (
             <div
-              key={chat.id}
-              className="flex justify-between p-3 border-b items-center"
+              key={contact._id}
+              className={`flex justify-between p-3 border-b items-center cursor-pointer hover:bg-gray-50 ${
+                selectedChatData?._id === contact._id && "bg-gray-50"
+              }`}
+              onClick={() => setSelectedChatData(contact)}
             >
               <div className="flex gap-3 items-center">
-                <TiUser className="text-4xl" />
+                <TiUser className="text-4xl shrink-0" />
 
                 <div>
-                  <p className="text-lg">{chat.name}</p>
-                  <p>{chat.lastMessage}</p>
+                  <p className="text-lg">{contact.name}</p>
+                  <p>{contact.lastMessage}</p>
                 </div>
               </div>
 
-              <p>{chat.lastMessageTime}</p>
+              <p>{formatLastMessageTime(contact.lastMessageTime)}</p>
             </div>
           ))}
         </div>

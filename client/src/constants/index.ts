@@ -9,6 +9,10 @@ export const GET_USER_INFO = `${AUTH_ROUTES}/getUserInfo`;
 
 export const CONTACT_ROUTES = "api/contact";
 export const SEARCH_ROUTE = `${CONTACT_ROUTES}/search`;
+export const GET_CONTACTS = `${CONTACT_ROUTES}/get-contacts`;
+
+export const CHAT_ROUTES = "api/chat";
+export const GET_MESSAGES = `${CHAT_ROUTES}/messages`;
 
 export const dummyChatPreviews = [
   {

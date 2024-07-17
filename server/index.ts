@@ -12,6 +12,7 @@ import setupSocket from "./socket";
 import authRoutes from "./routes/auth";
 import userRoutes from "./routes/user";
 import contactRoutes from "./routes/contact";
+import chatRoutes from "./routes/chat";
 
 dotenv.config();
 
@@ -32,6 +33,7 @@ app.use(bodyParser.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/contact", contactRoutes);
+app.use("/api/chat", chatRoutes);
 
 // Create HTTP server
 const server = http.createServer(app);

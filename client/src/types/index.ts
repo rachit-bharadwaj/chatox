@@ -26,18 +26,20 @@ export type ChatSlice = ReturnType<typeof createChatSlice>;
 
 export type AppState = AuthSlice & ChatSlice;
 
-export type ChatPreview = {
-  _id: string;
-  name: string;
-  lastMessage: string;
+export type Contact = {
+  email: string;
   lastMessageTime: string;
-  avatar: string;
+  lastMessage: string;
+  name: string;
+  profilePicture: string;
+  userName: string;
+  _id: string;
 };
 
 export type Message = {
   _id: string;
-  sender:  string;
-  receiver: string | object;
+  sender: string;
+  receiver: string;
   messageType: string;
   message?: string;
   fileUrl?: string;
