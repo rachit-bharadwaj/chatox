@@ -21,7 +21,7 @@ app.use(
   cors({
     origin: [process.env.CLIENT_URL!],
     credentials: true,
-    exposedHeaders: ["set-cookie"],
+    exposedHeaders: ["Set-cookie"],
   })
 );
 app.use(cookieParser());
