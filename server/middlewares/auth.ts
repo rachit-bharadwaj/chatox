@@ -7,6 +7,7 @@ export const verifyToken = async (
   next: NextFunction
 ) => {
   const token = await req.cookies.token;
+  console.log(req)
   console.log(req.body)
   
   if (!token) {
