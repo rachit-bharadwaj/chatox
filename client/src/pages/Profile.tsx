@@ -15,6 +15,7 @@ import { toast } from "sonner";
 
 // components
 import { EditForm } from "../components/profile";
+import { Navbar } from "../components/shared";
 
 const UserPage: FC = () => {
   const { userName } = useParams<{ userName: string }>();
@@ -57,6 +58,8 @@ const UserPage: FC = () => {
 
   return (
     <div className="p-3">
+      <Navbar />
+
       <div className="flex justify-center text-center flex-col items-center gap-5 mt-20">
         {profileData?.profilePicture ? (
           <img
@@ -74,7 +77,9 @@ const UserPage: FC = () => {
           <p className="text-gray-500">{profileData?.email}</p>
         </div>
 
-        <div className="text-gray-500 text-justify max-w-lg">{profileData?.bio}</div>
+        <div className="text-gray-500 text-justify max-w-lg">
+          {profileData?.bio}
+        </div>
       </div>
 
       <div className="my-10 gap-10 flex-wrap flex justify-center">

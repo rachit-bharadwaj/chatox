@@ -16,6 +16,8 @@ import { GET_CONTACTS, SEARCH_ROUTE } from "../../constants";
 import { apiClient } from "../../utils/apiClient";
 import useAppStore from "../../store";
 
+import Cookies from "js-cookie";
+
 export default function ChatList() {
   const { setSelectedChatData, selectedChatData, userData } = useAppStore();
   const [searchDropDown, setSearchDropDown] = useState(false);
@@ -104,6 +106,11 @@ export default function ChatList() {
     }
   };
 
+  const logout = () => {
+    Cookies.remove("token");
+    window.location.reload();
+  };
+
   return (
     <aside>
       <header className="p-3 border-b flex justify-between items-center">
@@ -127,15 +134,23 @@ export default function ChatList() {
           </DropdownMenuTrigger>
           <DropdownMenuContent>
             <DropdownMenuItem>
-              <Link to="/profile">Profile </Link>
+              <Link to={`/${userData?.userName}`} className="w-full text-left">
+                Profile
+              </Link>
             </DropdownMenuItem>
 
             <DropdownMenuItem>
-              <Link to="/settings">Settings </Link>
+              <Link to="/settings" className="w-full text-left">
+                Settings
+              </Link>
             </DropdownMenuItem>
 
             <DropdownMenuSeparator />
-            <DropdownMenuItem>Log out</DropdownMenuItem>
+            <DropdownMenuItem>
+              <button className="w-full text-left" onClick={logout}>
+                Logout
+              </button>
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </header>

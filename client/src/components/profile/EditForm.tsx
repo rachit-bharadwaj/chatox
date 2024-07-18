@@ -77,34 +77,42 @@ export default function EditForm({ profileData }: { profileData: User }) {
           </button>
         </AlertDialogTrigger>
         <AlertDialogContent>
-          <div className="items-center h-fit w-fit border rounded-lg p-5 mx-auto">
-            {editedData.profilePicture ? (
+          <div className="items-center h-fit w-fit border rounded-xl p-5 mx-auto">
+            {/* {editedData.profilePicture ? (
               <img
                 src={editedData.profilePicture}
                 alt={editedData.name}
                 className="w-40 h-40 rounded-full"
               />
-            ) : (
-              <>
-                <label
-                  htmlFor="profile-pic"
-                  className="flex gap-3 items-center cursor-pointer"
-                >
+            ) : ( */}
+            <>
+              <label
+                htmlFor="profile-pic"
+                className="flex gap-3 items-center cursor-pointer"
+              >
+                {editedData.profilePicture ? (
+                  <img
+                    src={editedData.profilePicture}
+                    alt={editedData.name}
+                    className="w-40 h-40 rounded-full"
+                  />
+                ) : (
                   <div className="flex flex-col items-center">
                     <TiUser className="h-20 w-20 text-gray-500" />
                     <p className="text-gray-400">New profile picture</p>
                   </div>
-                </label>
-                <input
-                  type="file"
-                  name="profile-pic"
-                  accept="image/*"
-                  id="profile-pic"
-                  hidden
-                  onChange={handleInput}
-                />
-              </>
-            )}
+                )}
+              </label>
+              <input
+                type="file"
+                name="profile-pic"
+                accept="image/*"
+                id="profile-pic"
+                hidden
+                onChange={handleInput}
+              />
+            </>
+            {/* )} */}
           </div>
 
           <div className="border rounded-lg flex gap-2 items-center">
