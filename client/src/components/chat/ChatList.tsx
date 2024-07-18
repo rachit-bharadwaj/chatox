@@ -1,19 +1,9 @@
 import { ChangeEvent, useEffect, useRef, useState } from "react";
-
 import moment from "moment";
-
-// locals
-import { Contact } from "../../types";
-import { GET_CONTACTS, SEARCH_ROUTE } from "../../constants";
-import { apiClient } from "../../utils/apiClient";
-import useAppStore from "../../store";
-
-// icons
+import { Link } from "react-router-dom";
 import { TiUser } from "react-icons/ti";
 import { HiMiniMagnifyingGlass } from "react-icons/hi2";
 import { ImCross } from "react-icons/im";
-
-// shadcn
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,15 +11,16 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "../../components/ui/dropdown-menu";
-import { Link } from "react-router-dom";
+import { Contact } from "../../types";
+import { GET_CONTACTS, SEARCH_ROUTE } from "../../constants";
+import { apiClient } from "../../utils/apiClient";
+import useAppStore from "../../store";
 
 export default function ChatList() {
   const { setSelectedChatData, selectedChatData, userData } = useAppStore();
-
   const [searchDropDown, setSearchDropDown] = useState(false);
   const [searchList, setSearchList] = useState<Contact[]>([]);
   const [searchResLoading, setSearchResLoading] = useState(false);
-
   const [contactList, setContactList] = useState<Contact[]>([]);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
@@ -37,6 +28,13 @@ export default function ChatList() {
     try {
       setSearchDropDown(true);
       setSearchResLoading(true);
+
+      if (searchTerm.length === 0) {
+        setSearchList([]);
+        setSearchDropDown(false);
+        setSearchResLoading(false);
+        return;
+      }
 
       if (searchTerm.length > 0) {
         const res = await apiClient.post(
@@ -79,7 +77,7 @@ export default function ChatList() {
           withCredentials: true,
         });
         const resData = await res.data;
-        console.log(resData);
+
         setContactList(resData.contacts);
       } catch (error) {
         console.log(error);
@@ -93,22 +91,25 @@ export default function ChatList() {
     const now = moment();
     const messageTime = moment(timestamp);
 
-    if (now.isSame(messageTime, "day")) {
-      // If the message was sent today
-      return messageTime.format("h:mm A");
-    } else if (now.subtract(1, "days").isSame(messageTime, "day")) {
-      // If the message was sent yesterday
-      return `Yesterday, ${messageTime.format("h:mm A")}`;
+    const minutesAgo = now.diff(messageTime, "minutes");
+    const hoursAgo = now.diff(messageTime, "hours");
+    const daysAgo = now.diff(messageTime, "days");
+
+    if (minutesAgo < 60) {
+      return `${minutesAgo}m`;
+    } else if (hoursAgo < 24) {
+      return `${hoursAgo}h`;
     } else {
-      // If the message was sent earlier
-      return messageTime.format("MMM D, h:mm A");
+      return `${daysAgo}d`;
     }
   };
 
   return (
     <aside>
       <header className="p-3 border-b flex justify-between items-center">
-        <h1 className="text-3xl font-extrabold text-[#615ef0]">Chatox</h1>
+        <h1 className="text-3xl font-extrabold text-[#615ef0]">
+          <Link to="/">Chatox</Link>
+        </h1>
 
         <DropdownMenu>
           <DropdownMenuTrigger className="outline-none">
@@ -140,13 +141,13 @@ export default function ChatList() {
       </header>
 
       {/* search bar */}
-      <div className="m-3 py-2 px-3 border rounded-lg flex gap-2 items-center">
-        <HiMiniMagnifyingGlass className="text-2xl text-gray-400 shrink-0" />
+      <div className="m-3 px-3 py-4 rounded-xl flex gap-2 text-[#929292] items-center bg-[#f3f3f3]">
+        <HiMiniMagnifyingGlass className="text-2xl shrink-0" />
         <input
           id="contact-search"
           type="text"
-          placeholder="Search chats"
-          className="w-full outline-none"
+          placeholder="Search contacts"
+          className="w-full outline-none bg-transparent"
           onChange={(e: ChangeEvent<HTMLInputElement>) => {
             handleContactSearch(e.target.value);
           }}
@@ -194,21 +195,31 @@ export default function ChatList() {
           {contactList.map((contact: Contact) => (
             <div
               key={contact._id}
-              className={`flex justify-between p-3 border-b items-center cursor-pointer hover:bg-gray-50 ${
-                selectedChatData?._id === contact._id && "bg-gray-50"
+              className={`flex justify-between p-3 my-5 items-center cursor-pointer hover:bg-gray-50 rounded-xl mx-3 ${
+                selectedChatData?._id === contact._id && "bg-[#f6f6fe]"
               }`}
               onClick={() => setSelectedChatData(contact)}
             >
               <div className="flex gap-3 items-center">
-                <TiUser className="text-4xl shrink-0" />
+                {contact.profilePicture ? (
+                  <img
+                    src={contact.profilePicture}
+                    alt={contact.name}
+                    className="w-10 h-10 rounded-xl"
+                  />
+                ) : (
+                  <TiUser className="text-4xl shrink-0" />
+                )}
 
                 <div>
                   <p className="text-lg">{contact.name}</p>
-                  <p>{contact.lastMessage}</p>
+                  <p className="text-[#999999]">{contact.lastMessage}</p>
                 </div>
               </div>
 
-              <p>{formatLastMessageTime(contact.lastMessageTime)}</p>
+              <p className="text-[#999999]">
+                {formatLastMessageTime(contact.lastMessageTime)}
+              </p>
             </div>
           ))}
         </div>
