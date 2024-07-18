@@ -1,5 +1,7 @@
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 
+import moment from "moment";
+
 // locals
 import { Contact } from "../../types";
 import { GET_CONTACTS, SEARCH_ROUTE } from "../../constants";
@@ -10,10 +12,19 @@ import useAppStore from "../../store";
 import { TiUser } from "react-icons/ti";
 import { HiMiniMagnifyingGlass } from "react-icons/hi2";
 import { ImCross } from "react-icons/im";
-import moment from "moment";
+
+// shadcn
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "../../components/ui/dropdown-menu";
+import { Link } from "react-router-dom";
 
 export default function ChatList() {
-  const { setSelectedChatData, selectedChatData } = useAppStore();
+  const { setSelectedChatData, selectedChatData, userData } = useAppStore();
 
   const [searchDropDown, setSearchDropDown] = useState(false);
   const [searchList, setSearchList] = useState<Contact[]>([]);
@@ -96,8 +107,36 @@ export default function ChatList() {
 
   return (
     <aside>
-      <header className="p-3 py-5 border-b">
+      <header className="p-3 border-b flex justify-between items-center">
         <h1 className="text-3xl font-extrabold text-[#615ef0]">Chatox</h1>
+
+        <DropdownMenu>
+          <DropdownMenuTrigger className="outline-none">
+            {userData?.profilePicture ? (
+              <img
+                src={userData?.profilePicture}
+                alt={userData?.name}
+                className="w-7 h-7 rounded-full"
+              />
+            ) : (
+              <div className="rounded-full border p-2">
+                <TiUser className="h-7 w-7 text-gray-500" />
+              </div>
+            )}
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuItem>
+              <Link to="/profile">Profile </Link>
+            </DropdownMenuItem>
+
+            <DropdownMenuItem>
+              <Link to="/settings">Settings </Link>
+            </DropdownMenuItem>
+
+            <DropdownMenuSeparator />
+            <DropdownMenuItem>Log out</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </header>
 
       {/* search bar */}

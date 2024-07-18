@@ -9,12 +9,15 @@ import Cookies from "js-cookie";
 import useAppStore from "./store";
 
 // pages
-import { Auth, Home, NotFound } from "./pages";
+import { Auth, Home, NotFound, Profile } from "./pages";
 
 // containers
 import { AuthRoutes, PrivateRoutes } from "./containers";
 import { apiClient } from "./utils/apiClient";
 import { GET_USER_INFO } from "./constants";
+
+// shadcn
+import { Toaster } from "./components/ui/sonner";
 
 function App() {
   const token = Cookies.get("token");
@@ -51,25 +54,32 @@ function App() {
   if (loading) return null;
 
   return (
-    <Routes>
-      <Route
-        path="/"
-        element={
-          <PrivateRoutes>
-            <Home />
-          </PrivateRoutes>
-        }
-      />
-      <Route
-        path="/auth"
-        element={
-          <AuthRoutes>
-            <Auth />
-          </AuthRoutes>
-        }
-      />
-      <Route path="*" element={<NotFound />} />
-    </Routes>
+    <>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <PrivateRoutes>
+              <Home />
+            </PrivateRoutes>
+          }
+        />
+        <Route
+          path="/auth"
+          element={
+            <AuthRoutes>
+              <Auth />
+            </AuthRoutes>
+          }
+        />
+
+        <Route path="/:userName" element={<Profile />} />
+
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+
+      <Toaster />
+    </>
   );
 }
 

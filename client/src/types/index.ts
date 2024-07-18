@@ -38,8 +38,8 @@ export type Contact = {
 
 export type Message = {
   _id: string;
-  sender: string;
-  receiver: string;
+  sender: User;
+  receiver: User;
   messageType: string;
   message?: string;
   fileUrl?: string;
