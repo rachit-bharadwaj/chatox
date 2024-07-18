@@ -22,6 +22,8 @@ const UserPage: FC = () => {
   const [profileData, setProfileData] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const [NotFound, setNotFound] = useState(false);
+
   const { userData, setSelectedChatData } = useAppStore();
 
   useEffect(() => {
@@ -33,11 +35,16 @@ const UserPage: FC = () => {
           { withCredentials: true }
         );
         const resData = res.data;
-        console.log(resData.user);
+        console.log(res.status);
+        if (res.status === 404) {
+          setNotFound(true);
+          return;
+        }
         setProfileData(resData.user);
         setLoading(false);
       } catch (error) {
-        console.error(error);
+        console.log(error);
+        setNotFound(true);
         setLoading(false);
       }
     };
@@ -49,6 +56,15 @@ const UserPage: FC = () => {
 
   if (loading) {
     return <div>Loading...</div>;
+  }
+
+  if (NotFound) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Navbar />
+        <p className="text-5xl text-indigo-500 font-bold">Page Not Found</p>
+      </div>
+    );
   }
 
   const copyProfileLink = () => {

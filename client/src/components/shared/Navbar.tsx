@@ -24,7 +24,7 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="p-3 border-b flex justify-between items-center">
+    <nav className="p-3 border-b fixed w-full top-0 flex justify-between items-center">
       <h1 className="text-3xl font-extrabold text-[#615ef0]">
         <Link to="/">Chatox</Link>
       </h1>
