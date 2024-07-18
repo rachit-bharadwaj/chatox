@@ -18,3 +18,5 @@ export const GET_MESSAGES = `${CHAT_ROUTES}/messages`;
 export const USER_ROUTES = "api/user";
 export const FETCH_BY_USERNAME = `${USER_ROUTES}/fetchByUserName`;
 export const EDIT_PROFILE = `${USER_ROUTES}/editProfile`;
+export const CHECK_USERNAME = `${USER_ROUTES}/checkUsername`;
+export const CHECK_EMAIL = `${USER_ROUTES}/checkEmail`;
