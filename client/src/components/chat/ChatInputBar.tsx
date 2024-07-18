@@ -1,16 +1,11 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { ChangeEvent, useState } from "react";
-
-import useAppStore from "../../store";
-
+import { ChangeEvent, useState, KeyboardEvent } from "react";
 import EmojiPicker from "emoji-picker-react";
-
-// icons
-import { MdAttachFile } from "react-icons/md";
-import { RiEmojiStickerLine } from "react-icons/ri";
-import { IoSend } from "react-icons/io5";
+import useAppStore from "../../store";
 import { cn } from "../../lib/utils";
 import { useSocket } from "../../contexts/useSocket";
+
+// icons
+import { RiEmojiStickerLine } from "react-icons/ri";
 
 export default function ChatInputBar() {
   const { selectedChatData, userData } = useAppStore();
@@ -18,6 +13,7 @@ export default function ChatInputBar() {
   const [message, setMessage] = useState("");
   const socket = useSocket();
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const addEmoji = (emoji: any) => {
     setMessage(message + emoji.emoji);
   };
@@ -39,35 +35,36 @@ export default function ChatInputBar() {
     setMessage("");
   };
 
+  const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") {
+      sendMessage();
+    }
+  };
+
   return (
-    <div className="flex p-3 gap-2 items-center">
-      <div className="bg-gray-50 flex p-3 rounded-lg shadow">
+    <div className="flex p-3 gap-2 items-center w-full">
+      <div className="bg-gray-50 border-2 w-full flex p-3 rounded-2xl shadow">
         <input
           type="text"
-          className="outline-none bg-transparent w-full"
+          className="outline-none bg-transparent flex-1"
           placeholder="Message"
           value={message}
           onChange={(e: ChangeEvent<HTMLInputElement>) =>
             setMessage(e.target.value)
           }
+          onKeyDown={handleKeyDown}
         />
 
-        <div className="flex gap-3">
-          <MdAttachFile className="text-gray-500 text-2xl" />
+        <button onClick={() => setEmojiPicker((prev) => !prev)}>
+          <RiEmojiStickerLine
+            className={cn(`text-gray-500 text-2xl`, {
+              "text-yellow-500": emojiPicker,
+            })}
+          />
+        </button>
 
-          <div>
-            <button onClick={() => setEmojiPicker((prev) => !prev)}>
-              <RiEmojiStickerLine
-                className={cn(`text-gray-500 text-2xl`, {
-                  "text-yellow-500": emojiPicker,
-                })}
-              />
-            </button>
-
-            <div className="absolute bottom-20 right-0">
-              <EmojiPicker open={emojiPicker} onEmojiClick={addEmoji} />
-            </div>
-          </div>
+        <div className="absolute bottom-20 right-0">
+          <EmojiPicker open={emojiPicker} onEmojiClick={addEmoji} />
         </div>
       </div>
 
@@ -75,7 +72,7 @@ export default function ChatInputBar() {
         className="bg-white p-3 h-12 w-12 min-h-fit text-center rounded-full shadow"
         onClick={sendMessage}
       >
-        <IoSend className="text-green-500 text-2xl" />
+        <img src="/icons/send.svg" alt="send" />
       </button>
     </div>
   );

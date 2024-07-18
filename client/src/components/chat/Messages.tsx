@@ -54,17 +54,17 @@ export default function Messages() {
           <div
             className={
               message.sender === selectedChatData?._id
-                ? "flex justify-end"
-                : "text-left"
+                ? "text-left"
+                : "text-right"
             }
           >
             {message.messageType === "text" && (
               <div
                 className={`${
                   message.sender !== selectedChatData?._id
-                    ? "bg-indigo-500 text-white text-right"
+                    ? "bg-[#615ef0] text-white text-right"
                     : "bg-white text-black text-left"
-                } border inline-block rounded-lg break-words p-3`}
+                } inline-block shadow rounded-xl break-words p-3 my-0.5`}
               >
                 {message.message}
               </div>
@@ -82,7 +82,7 @@ export default function Messages() {
   }, [selectedChatMessages]);
 
   return (
-    <section className="h-full">
+    <section className="h-full p-3 overflow-y-auto">
       {renderMessages()}
       <div ref={scrollRef} />
     </section>
