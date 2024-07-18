@@ -36,6 +36,9 @@ app.use("/api/user", userRoutes);
 app.use("/api/contact", contactRoutes);
 app.use("/api/chat", chatRoutes);
 
+// Serve static files
+app.use("/temp", express.static("/temp"));
+
 // Create HTTP server
 const server = http.createServer(app);
 

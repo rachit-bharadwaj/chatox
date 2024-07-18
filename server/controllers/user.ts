@@ -2,6 +2,8 @@ import type { Request, Response } from "express";
 import User from "../database/models/User.schema";
 import dotenv from "dotenv";
 import connectDB from "../database/connection/mongoose";
+import { uploadToCloudinary } from "../utils/cloudinary";
+import fs from "fs";
 
 dotenv.config();
 
@@ -35,7 +37,7 @@ export const editProfile = async (req: Request, res: Response) => {
   await connectDB();
 
   try {
-    const { _id, name, userName, profilePicture, bio } = req.body;
+    const { _id, name, userName, bio } = req.body;
 
     const user = await User.findById(_id);
 
@@ -43,9 +45,16 @@ export const editProfile = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "User not found" });
     }
 
+    if (req.file) {
+      const localFilePath = req.file.path;
+      const uploadResult = await uploadToCloudinary(localFilePath);
+      if (uploadResult) {
+        user.profilePicture = uploadResult.url;
+      }
+    }
+
     user.name = name;
     user.userName = userName;
-    user.profilePicture = profilePicture;
     user.bio = bio;
 
     await user.save();

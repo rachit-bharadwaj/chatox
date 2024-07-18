@@ -1,9 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ChangeEvent, useEffect, useState } from "react";
-
-// local
 import { User } from "../../types";
-
-// shadcn
 import {
   AlertDialog,
   AlertDialogAction,
@@ -11,8 +8,6 @@ import {
   AlertDialogContent,
   AlertDialogTrigger,
 } from "../ui/alert-dialog";
-
-// icons
 import { TiUser } from "react-icons/ti";
 import { apiClient } from "../../utils/apiClient";
 import { EDIT_PROFILE } from "../../constants";
@@ -22,28 +17,41 @@ export default function EditForm({ profileData }: { profileData: User }) {
     profileData.profilePicture || ""
   );
   const [editedData, setEditedData] = useState<User>(profileData);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const handleInput = (e: ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = e.target.files ? e.target.files[0] : null;
+    const file = e.target.files ? e.target.files[0] : null;
+    setSelectedFile(file);
 
-    if (selectedFile) {
+    if (file) {
       const reader = new FileReader();
-
       reader.onloadend = () => {
-        console.log("Preview URL:", reader.result);
         setPreviewURL(reader.result as string);
       };
-
-      reader.readAsDataURL(selectedFile);
+      reader.readAsDataURL(file);
     }
   };
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
 
+    console.log("Edited data:", editedData);
+
+    const formData = new FormData();
+    formData.append("_id", editedData._id!);
+    formData.append("name", editedData.name!);
+    formData.append("userName", editedData.userName!);
+    formData.append("bio", editedData.bio!);
+    if (selectedFile) {
+      formData.append("profilePicture", selectedFile);
+    }
+
     try {
-      const res = await apiClient.post(EDIT_PROFILE, editedData, {
+      const res = await apiClient.post(EDIT_PROFILE, formData, {
         withCredentials: true,
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       });
 
       const resData = await res.data;

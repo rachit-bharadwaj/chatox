@@ -1,16 +1,15 @@
 import { Router } from "express";
-
-// controllers
 import {
   fetchAllUsers,
   fetchByUserName,
   editProfile,
 } from "../controllers/user";
+import { multerMiddleware } from "../middlewares/multer";
 
 const userRoutes = Router();
 
 userRoutes.get("/fetchAll", fetchAllUsers);
 userRoutes.post("/fetchByUserName", fetchByUserName);
-userRoutes.post("/editProfile", editProfile);
+userRoutes.post("/editProfile", multerMiddleware, editProfile);
 
 export default userRoutes;
