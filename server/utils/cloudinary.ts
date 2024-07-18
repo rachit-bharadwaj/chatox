@@ -6,11 +6,13 @@ dotenv.config();
 
 cloudinary.config({
   cloud_name: "dnrct2gvm",
-  api_key: "191841338847426",
-  api_secret: "5_w3hXxF1NJT9KJuskSxPSk1f9c",
+  api_key: "124819629667821",
+  api_secret: process.env.CLOUDINARY_API_SECRET?.toString(),
 });
 
-export const uploadToCloudinary = async (localFilePath: string): Promise<UploadApiResponse | null> => {
+export const uploadToCloudinary = async (
+  localFilePath: string
+): Promise<UploadApiResponse | null> => {
   try {
     if (!localFilePath) return null;
 

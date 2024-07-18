@@ -11,6 +11,7 @@ import {
 import { TiUser } from "react-icons/ti";
 import { apiClient } from "../../utils/apiClient";
 import { EDIT_PROFILE } from "../../constants";
+import { toast } from "sonner";
 
 export default function EditForm({ profileData }: { profileData: User }) {
   const [previewURL, setPreviewURL] = useState<string>(
@@ -18,6 +19,7 @@ export default function EditForm({ profileData }: { profileData: User }) {
   );
   const [editedData, setEditedData] = useState<User>(profileData);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [loading, setLoading] = useState(false);
 
   const handleInput = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files ? e.target.files[0] : null;
@@ -35,7 +37,7 @@ export default function EditForm({ profileData }: { profileData: User }) {
   const handleSubmit = async (e: any) => {
     e.preventDefault();
 
-    console.log("Edited data:", editedData);
+    setLoading(true);
 
     const formData = new FormData();
     formData.append("_id", editedData._id!);
@@ -55,7 +57,11 @@ export default function EditForm({ profileData }: { profileData: User }) {
       });
 
       const resData = await res.data;
-      console.log(resData);
+      if (resData.user) {
+        setLoading(false);
+        toast.success("Profile updated successfully");
+        setEditedData(resData.user);
+      }
     } catch (error) {
       console.log(error);
     }
@@ -78,13 +84,6 @@ export default function EditForm({ profileData }: { profileData: User }) {
         </AlertDialogTrigger>
         <AlertDialogContent>
           <div className="items-center h-fit w-fit border rounded-xl p-5 mx-auto">
-            {/* {editedData.profilePicture ? (
-              <img
-                src={editedData.profilePicture}
-                alt={editedData.name}
-                className="w-40 h-40 rounded-full"
-              />
-            ) : ( */}
             <>
               <label
                 htmlFor="profile-pic"
@@ -169,7 +168,15 @@ export default function EditForm({ profileData }: { profileData: User }) {
           <AlertDialogCancel>Cancel</AlertDialogCancel>
           <AlertDialogAction asChild>
             <button type="submit" onClick={handleSubmit}>
-              Save
+              {loading ? (
+                <img
+                  src="/graphics/loading.gif"
+                  alt="updating profile"
+                  className="w-10"
+                />
+              ) : (
+                "Save"
+              )}
             </button>
           </AlertDialogAction>
         </AlertDialogContent>
