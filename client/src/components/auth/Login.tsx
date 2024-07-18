@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // react
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 // locals
@@ -13,6 +14,9 @@ import { BiSolidUserBadge } from "react-icons/bi";
 import { HiLockClosed } from "react-icons/hi";
 import { IoEye, IoEyeOff } from "react-icons/io5";
 
+// shadcn
+import { toast } from "sonner";
+
 export default function Login() {
   const { setUserData } = useAppStore();
 
@@ -24,9 +28,12 @@ export default function Login() {
   });
 
   const [showPassword, setShowPassword] = useState(false);
+  const [allFilled, setAllFilled] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: ChangeEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setLoading(true);
 
     try {
       const res = await apiClient.post(LOGIN_ROUTE, loginData, {
@@ -36,10 +43,28 @@ export default function Login() {
       const resData = await res.data;
       setUserData(resData.user);
       if (resData.user) navigate("/");
-    } catch (error: unknown) {
-      console.log(error);
+      else {
+        toast.error(resData.message);
+      }
+    } catch (error: any) {
+      toast.error(error.response.data.message);
+    } finally {
+      setLoading(false);
     }
   };
+
+  useEffect(() => {
+    const checkFieldsFilled = () => {
+      // check if all the fields are filled
+      if (loginData.emailOrUsername && loginData.password) {
+        setAllFilled(true);
+      } else {
+        setAllFilled(false);
+      }
+    };
+
+    checkFieldsFilled();
+  }, [loginData]);
 
   return (
     <form
@@ -78,10 +103,20 @@ export default function Login() {
       </div>
 
       <button
-        type="submit"
-        className="bg-gradient-blue text-white py-2 rounded font-bold text-lg"
+        disabled={!allFilled}
+        className={`text-white flex justify-center items-center py-2 rounded font-bold text-lg ${
+          allFilled ? "bg-gradient-blue" : "bg-gray-400 cursor-not-allowed"
+        }`}
       >
-        Login
+        {loading ? (
+          <img
+            src="/graphics/loading.gif"
+            alt="registering"
+            className="h-10 w-fit"
+          />
+        ) : (
+          "Login"
+        )}
       </button>
     </form>
   );
