@@ -1,0 +1,23 @@
+.rounded-image {
+    border-radius: 1rem;
+    width: 20rem;
+    height: 15rem; 
+    object-fit: contain;
+  }
+  
+  .image-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+  }
+  
+  .technology-icons {
+    justify-content: space-evenly;
+    display: flex;
+  }
+  
+  .technology-icons img {
+    width: 60px;
+    height: 60px;
+  }
+  
