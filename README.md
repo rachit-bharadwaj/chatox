@@ -4,7 +4,7 @@
 
 ## Description
 
-Chat Application is a web-based platform where users can register, search for people by name, email, or username, and chat with them in real-time. Users can also edit their profiles to include a bio and a profile picture. The application is free to use and available online.
+Chatox is a web-based real-time chatting platform where users can register, search for people by name, email, or username, and chat with them in real-time. Users can also edit their profiles to include a bio and a profile picture. The application is free to use and available online.
 
 ### Features
 
