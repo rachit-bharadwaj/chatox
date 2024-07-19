@@ -23,6 +23,7 @@ export default function Home() {
   const [chatLayoutSize, setChatLayoutSize] = useState<number[]>([40, 60]);
   const [initialized, setInitialized] = useState(false);
   const [isMobileView, setIsMobileView] = useState(false);
+  const [showChatScreen, setShowChatScreen] = useState(false);
 
   const { selectedChatData } = useAppStore();
 
@@ -51,6 +52,27 @@ export default function Home() {
     setInitialized(true);
   }, []);
 
+  useEffect(() => {
+    if (isMobileView && selectedChatData) {
+      setShowChatScreen(true);
+      window.history.pushState(null, "");
+    }
+  }, [isMobileView, selectedChatData]);
+
+  useEffect(() => {
+    const handlePopState = () => {
+      if (isMobileView && showChatScreen) {
+        setShowChatScreen(false);
+      }
+    };
+
+    window.addEventListener("popstate", handlePopState);
+
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, [isMobileView, showChatScreen]);
+
   const handleLayoutChange = (size: number[]) => {
     setChatLayoutSize(size);
     localStorage.setItem("chat-layout-size", JSON.stringify(size));
@@ -60,7 +82,7 @@ export default function Home() {
 
   return isMobileView ? (
     <>
-      {selectedChatData ? (
+      {showChatScreen && selectedChatData ? (
         <ChatScreen>
           <ChatScreenHeader />
           <Messages />
