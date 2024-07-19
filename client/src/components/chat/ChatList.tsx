@@ -1,4 +1,4 @@
-import { ChangeEvent, useEffect, useRef, useState } from "react";
+import { ChangeEvent, KeyboardEvent, useEffect, useRef, useState } from "react";
 import moment from "moment";
 import { Link } from "react-router-dom";
 import { TiUser } from "react-icons/ti";
@@ -70,6 +70,16 @@ export default function ChatList() {
       searchInputRef.current.value = "";
     }
     setSelectedChatData(contact);
+  };
+
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      if (searchList.length > 0) {
+        selectContact(searchList[0]);
+      }
+      searchInputRef.current?.blur();
+    }
   };
 
   useEffect(() => {
@@ -163,9 +173,8 @@ export default function ChatList() {
           type="text"
           placeholder="Search contacts"
           className="w-full outline-none bg-transparent"
-          onChange={(e: ChangeEvent<HTMLInputElement>) => {
-            handleContactSearch(e.target.value);
-          }}
+          onChange={(e: ChangeEvent<HTMLInputElement>) => handleContactSearch(e.target.value)}
+          onKeyDown={handleKeyDown}
           ref={searchInputRef}
         />
         {searchDropDown && (

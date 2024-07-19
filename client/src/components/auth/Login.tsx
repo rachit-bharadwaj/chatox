@@ -35,6 +35,9 @@ export default function Login() {
     e.preventDefault();
     setLoading(true);
 
+    // remove focus from input bar
+    e.currentTarget.blur();
+
     try {
       const res = await apiClient.post(LOGIN_ROUTE, loginData, {
         withCredentials: true,

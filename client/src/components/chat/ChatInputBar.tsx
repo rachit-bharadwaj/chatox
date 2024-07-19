@@ -30,14 +30,14 @@ export default function ChatInputBar() {
       message,
       messageType: "text",
     });
-    console.log("sender: ", userData._id);
-    console.log("reciever: ", selectedChatData._id);
     setMessage("");
   };
 
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
       sendMessage();
+      // remove focus from the input bar
+      event.currentTarget.blur();
     }
   };
 
