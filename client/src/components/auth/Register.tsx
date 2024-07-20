@@ -300,7 +300,7 @@ export default function Register() {
           <BsFileLockFill className="text-2xl text-gray-400" />
           <input
             type={showConfirmPassword ? "text" : "password"}
-            placeholder="Password"
+            placeholder="Confirm Password"
             className="flex-1 outline-none"
             onChange={handleInput}
             id="confirmPassword"
