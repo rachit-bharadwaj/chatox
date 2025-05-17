@@ -12,9 +12,9 @@ import useAppStore from "./store";
 import { Auth, Home, NotFound, Profile } from "./pages";
 
 // containers
+import { GET_USER_INFO } from "./constants";
 import { AuthRoutes, PrivateRoutes } from "./containers";
 import { apiClient } from "./utils/apiClient";
-import { GET_USER_INFO } from "./constants";
 
 // shadcn
 import { Toaster } from "./components/ui/sonner";
@@ -33,8 +33,6 @@ function App() {
           withCredentials: true,
         });
         const resData = await res.data;
-
-        console.log(resData);
         setUserData(resData.user);
         setLoading(false);
       } catch (error) {

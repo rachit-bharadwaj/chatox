@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createContext, ReactNode, useEffect, useRef } from "react";
 import { io, Socket } from "socket.io-client";
-import useAppStore from "../store";
 import { HOST } from "../constants";
+import useAppStore from "../store";
 
 interface SocketContextType {
   current: Socket | null;
@@ -15,8 +15,6 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
   const { userData, selectedChatData, addMessage } = useAppStore();
 
   useEffect(() => {
-    console.log("User data before connecting socket:", userData);
-
     if (userData._id) {
       socket.current = io(HOST, {
         withCredentials: true,
@@ -24,7 +22,6 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
       });
 
       const handleReceiveMessage = (message: any) => {
-        console.log("Received message:", message);
         if (!message || !message.sender || !message.receiver) {
           console.error("Message structure is incorrect:", message);
           return;
@@ -40,10 +37,6 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
       };
 
       socket.current.on("receiveMessage", handleReceiveMessage);
-
-      socket.current.on("connect", () => {
-        console.log("Socket connected:", socket.current?.id);
-      });
 
       socket.current.on("connect_error", (err) => {
         console.error("Connection error:", err);
