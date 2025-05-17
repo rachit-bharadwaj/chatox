@@ -12,6 +12,7 @@ Chatox is a web-based real-time chatting platform where users can register, sear
 - Real-time Chatting
 - User Search by Name/Email/Username
 - Profile Customization
+- GIF Support with GIPHY API
 - Responsive design for all screens
 
 ## Snapshots
@@ -79,7 +80,14 @@ Chatox is a web-based real-time chatting platform where users can register, sear
 
 3. Update the backend URL in the constants file.
 
-4. Run the development server:
+4. Set up GIPHY API (for GIF support):
+   - Sign up for a free GIPHY API key at [https://developers.giphy.com/](https://developers.giphy.com/)
+   - In the `.env` file in the client directory, add your API key:
+   ```
+   VITE_GIPHY_API_KEY=your_giphy_api_key_here
+   ```
+
+5. Run the development server:
    ```bash
    cd ../server
    npm run dev

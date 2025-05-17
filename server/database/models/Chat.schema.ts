@@ -15,13 +15,13 @@ const ChatSchema = new Schema<ChatDocument>(
     },
     messageType: {
       type: String,
-      enum: ["text", "file"],
+      enum: ["text", "file", "gif"],
       required: true,
     },
     message: {
       type: String,
       required: function (this: ChatDocument) {
-        return this.messageType === "text";
+        return this.messageType === "text" || this.messageType === "gif";
       },
     },
     fileUrl: {

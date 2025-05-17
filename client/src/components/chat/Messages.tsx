@@ -69,6 +69,15 @@ export default function Messages() {
                 {message.message}
               </div>
             )}
+            {message.messageType === "gif" && (
+              <div className="inline-block shadow rounded-xl overflow-hidden my-0.5 max-w-xs">
+                <img 
+                  src={message.message} 
+                  alt="GIF" 
+                  className="w-full h-auto max-h-64 object-cover"
+                />
+              </div>
+            )}
           </div>
         </div>
       );
