@@ -1,4 +1,4 @@
-import { ChangeEvent, useState, KeyboardEvent, useEffect, useRef } from "react";
+import { ChangeEvent, useState, useEffect, useRef } from "react";
 import EmojiPicker from "emoji-picker-react";
 import useAppStore from "../../store";
 import { cn } from "../../lib/utils";
@@ -40,7 +40,9 @@ export default function ChatInputBar() {
   const [gifs, setGifs] = useState<Array<{id: string, url: string}>>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [isGifLoading, setIsGifLoading] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const [searchFocused, setSearchFocused] = useState(false);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const addEmoji = (emoji: any) => {
@@ -50,6 +52,8 @@ export default function ChatInputBar() {
   const selectGif = (gifUrl: string) => {
     setGifPicker(false);
     sendGif(gifUrl);
+    // Focus back on the input after selecting a GIF
+    inputRef.current?.focus();
   };
 
   const fetchGifs = async (query: string = "") => {
@@ -81,6 +85,18 @@ export default function ChatInputBar() {
     }
   }, [gifPicker]);
 
+  // Maintain focus on search input when typing
+  useEffect(() => {
+    if (searchFocused && searchInputRef.current) {
+      searchInputRef.current.focus();
+    }
+    
+    // Reset to trending GIFs when search is cleared
+    if (searchQuery === "" && gifPicker) {
+      fetchGifs();
+    }
+  }, [searchQuery, searchFocused, gifPicker]);
+
   const handleGifSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
@@ -108,6 +124,10 @@ export default function ChatInputBar() {
       return;
     }
 
+    if (!message.trim()) {
+      return; // Don't send empty messages
+    }
+
     socket?.emit("sendMessage", {
       sender: userData._id,
       receiver: selectedChatData._id,
@@ -115,39 +135,14 @@ export default function ChatInputBar() {
       messageType: "text",
     });
     setMessage("");
+    
+    // Maintain focus on the input after sending
+    inputRef.current?.focus();
   };
 
-  const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === "Enter") {
-      sendMessage();
-      // remove focus from the input bar
-      event.currentTarget.blur();
-    }
-  };
-
-  // Support for native keyboard GIFs via file input
-  const handleFileInput = (e: ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    
-    // Check if the file is a GIF
-    if (file.type === "image/gif") {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const gifDataUrl = event.target?.result as string;
-        if (gifDataUrl) {
-          sendGif(gifDataUrl);
-        }
-      };
-      reader.readAsDataURL(file);
-    } else {
-      alert("Only GIF files are supported");
-    }
-    
-    // Clear the input value so the same file can be selected again
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
+  // The Enter key will no longer send messages
+  const handleKeyDown = () => {
+    // Do nothing on Enter key - only send with button click
   };
 
   // Handle paste events to capture pasted GIFs
@@ -176,7 +171,7 @@ export default function ChatInputBar() {
   const GifPicker = () => {
     return (
       <div className="bg-white p-3 rounded-lg shadow-lg w-80 h-60 overflow-hidden flex flex-col">
-        {/* Search bar */}
+        {/* Search bar with ref to maintain focus */}
         <form onSubmit={handleGifSearch} className="mb-2 flex">
           <input
             type="text"
@@ -184,6 +179,9 @@ export default function ChatInputBar() {
             className="w-full px-3 py-2 border rounded-l-md focus:outline-none"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
+            ref={searchInputRef}
+            onFocus={() => setSearchFocused(true)}
+            onBlur={() => setSearchFocused(false)}
           />
           <button 
             type="submit" 
@@ -194,7 +192,10 @@ export default function ChatInputBar() {
         </form>
         
         {/* GIFs container */}
-        <div className="overflow-y-auto flex-1 grid grid-cols-2 gap-2">
+        <div 
+          className="overflow-y-auto flex-1 grid grid-cols-2 gap-2"
+          onClick={(e) => e.stopPropagation()} // Prevent losing focus when clicking in container
+        >
           {isGifLoading ? (
             <div className="col-span-2 flex justify-center items-center h-full">
               <p>Loading GIFs...</p>
@@ -232,6 +233,7 @@ export default function ChatInputBar() {
           }
           onKeyDown={handleKeyDown}
           onPaste={handlePaste}
+          ref={inputRef}
         />
 
         <div className="flex gap-2">
@@ -259,40 +261,6 @@ export default function ChatInputBar() {
                 "text-blue-500": gifPicker,
               })}
             />
-          </button>
-          
-          {/* Hidden file input for keyboard/device GIFs */}
-          <input 
-            type="file" 
-            accept="image/gif" 
-            ref={fileInputRef}
-            className="hidden"
-            onChange={handleFileInput}
-          />
-          
-          {/* Button to trigger native GIF selection */}
-          <button 
-            onClick={() => fileInputRef.current?.click()}
-            title="Upload a GIF from your device"
-          >
-            <svg 
-              xmlns="http://www.w3.org/2000/svg" 
-              width="24" 
-              height="24" 
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="text-gray-500"
-            >
-              <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7"></path>
-              <line x1="16" y1="5" x2="22" y2="5"></line>
-              <line x1="19" y1="2" x2="19" y2="8"></line>
-              <circle cx="9" cy="9" r="2"></circle>
-              <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path>
-            </svg>
           </button>
         </div>
 
