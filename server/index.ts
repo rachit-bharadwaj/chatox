@@ -1,4 +1,4 @@
-import express from "express";
+import express, { Request, Response } from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import bodyParser from "body-parser";
@@ -51,12 +51,12 @@ const __dirName = path.resolve();
 const rootDir = path.resolve(__dirName, "..");
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(rootDir, "/client/build")));
-  app.get("*", (req, res) => {
+  app.get("*", (req: Request, res: Response) => {
     console.log(__dirName);
     res.sendFile(path.resolve(rootDir, "client", "build", "index.html"));
   });
 } else {
-  app.get("/", (req, res) => {
+  app.get("/", (req: Request, res: Response) => {
     res.send("The server is running in development mode.");
   });
 }
