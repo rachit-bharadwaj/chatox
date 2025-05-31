@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "nodemon",
     "start": "node build/index.js",
-    "build": "npm i && tsc && npm --prefix ../client install && npm --prefix ../client run build"
+    "build": "npm i && npm i --save-dev @types/express @types/jsonwebtoken @types/bcrypt @types/body-parser @types/cookie-parser @types/multer && tsc && npm --prefix ../client install && npm --prefix ../client run build"
   },
   "keywords": [],
   "author": "",

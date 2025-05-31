@@ -2,6 +2,7 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 import type { NextFunction, Request, Response } from "express";
+import { Express } from "express";
 
 const tempDir = path.join(__dirname, "../temp"); // Adjusted path to be at the root level
 
@@ -11,10 +12,10 @@ if (!fs.existsSync(tempDir)) {
 }
 
 const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
+  destination: function (req: Express.Request, file: Express.Multer.File, cb: (error: Error | null, destination: string) => void) {
     cb(null, tempDir); // Use the resolved path
   },
-  filename: function (req, file, cb) {
+  filename: function (req: Express.Request, file: Express.Multer.File, cb: (error: Error | null, filename: string) => void) {
     const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
     cb(null, file.fieldname + "-" + uniqueSuffix + path.extname(file.originalname));
   },
@@ -23,7 +24,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage }).single('profilePicture'); // Adjust the field name as needed
 
 export const multerMiddleware = (req: Request, res: Response, next: NextFunction) => {
-  upload(req, res, function (err) {
+  upload(req, res, function (err: any) {
     if (err instanceof multer.MulterError) {
       // A Multer error occurred when uploading.
       return res.status(400).json({ message: err.message });
