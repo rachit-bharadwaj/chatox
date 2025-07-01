@@ -1,4 +1,5 @@
 import useAppStore from "../../store";
+import EncryptionIndicator from "../shared/EncryptionIndicator";
 
 // icons
 import { TiUser } from "react-icons/ti";
@@ -28,7 +29,10 @@ export default function ChatScreenHeader() {
           )}
         </div>
 
-        <p className="text-lg">{selectedChatData?.name}</p>
+        <div className="flex flex-col">
+          <p className="text-lg">{selectedChatData?.name}</p>
+          <EncryptionIndicator showText className="text-xs" />
+        </div>
       </Link>
 
       <button

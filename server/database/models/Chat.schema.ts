@@ -34,6 +34,28 @@ const ChatSchema = new Schema<ChatDocument>(
       type: Date,
       default: Date.now,
     },
+    encrypted: {
+      type: Boolean,
+      default: false,
+    },
+    sessionKeyId: {
+      type: String,
+      required: function (this: ChatDocument) {
+        return this.encrypted === true;
+      },
+    },
+    encryptedSessionKey: {
+      type: String,
+      required: function (this: ChatDocument) {
+        return this.encrypted === true;
+      },
+    },
+    iv: {
+      type: String,
+      required: function (this: ChatDocument) {
+        return this.encrypted === true;
+      },
+    },
   },
   { timestamps: true }
 );

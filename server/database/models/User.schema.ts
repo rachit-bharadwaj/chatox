@@ -36,6 +36,16 @@ const UserSchema = new Schema(
       type: String,
       default: "",
     },
+
+    publicKey: {
+      type: String,
+      default: "",
+    },
+
+    keyGeneratedAt: {
+      type: Date,
+      default: null,
+    },
   },
 
   { timestamps: true }

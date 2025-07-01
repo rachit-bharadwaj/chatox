@@ -20,3 +20,8 @@ export const FETCH_BY_USERNAME = `${USER_ROUTES}/fetchByUserName`;
 export const EDIT_PROFILE = `${USER_ROUTES}/editProfile`;
 export const CHECK_USERNAME = `${USER_ROUTES}/checkUsername`;
 export const CHECK_EMAIL = `${USER_ROUTES}/checkEmail`;
+
+export const CRYPTO_ROUTES = `${HOST}/api/crypto`;
+export const STORE_PUBLIC_KEY = `${CRYPTO_ROUTES}/public-key`;
+export const GET_PUBLIC_KEY = `${CRYPTO_ROUTES}/public-key`;
+export const GET_PUBLIC_KEYS = `${CRYPTO_ROUTES}/public-keys`;

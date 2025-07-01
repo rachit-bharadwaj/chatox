@@ -2,6 +2,7 @@
 import { create } from "zustand";
 import { createAuthSlice } from "./slices/authSlice";
 import { createChatSlice } from "./slices/chatSlice";
+import { createCryptoSlice } from "./slices/cryptoSlice";
 
 // types
 import { AppState } from "../types";
@@ -9,6 +10,7 @@ import { AppState } from "../types";
 const useAppStore = create<AppState>((set, get) => ({
   ...createAuthSlice(set),
   ...createChatSlice(set, get),
+  ...createCryptoSlice(set, get),
 }));
 
 export default useAppStore;

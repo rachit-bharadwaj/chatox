@@ -14,6 +14,7 @@ import authRoutes from "./routes/auth";
 import userRoutes from "./routes/user";
 import contactRoutes from "./routes/contact";
 import chatRoutes from "./routes/chat";
+import cryptoRoutes from "./routes/crypto";
 
 dotenv.config();
 
@@ -35,6 +36,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/contact", contactRoutes);
 app.use("/api/chat", chatRoutes);
+app.use("/api/crypto", cryptoRoutes);
 
 // Serve static files
 app.use("/temp", express.static("/temp"));

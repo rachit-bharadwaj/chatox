@@ -7,4 +7,8 @@ export interface ChatDocument extends Document {
   message?: string;
   fileUrl?: string;
   timestamp?: Date;
+  encrypted?: boolean;
+  sessionKeyId?: string;
+  encryptedSessionKey?: string;
+  iv?: string;
 }
