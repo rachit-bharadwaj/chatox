@@ -1,14 +1,17 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import useAppStore from "../../store";
 import moment from "moment";
 import { Message } from "../../types";
 import { apiClient } from "../../utils/apiClient";
 import { GET_MESSAGES } from "../../constants";
+import { useCrypto } from "../../hooks/useCrypto";
 
 export default function Messages() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const { selectedChatMessages, selectedChatData, setSelectedChatMessages } =
     useAppStore();
+  const { decryptMessage, isMessageEncrypted, decryptSessionKeyFromSender } = useCrypto();
+  const [decryptedMessages, setDecryptedMessages] = useState<Map<string, string>>(new Map());
 
   useEffect(() => {
     const fetchMessages = async () => {
@@ -33,6 +36,56 @@ export default function Messages() {
       fetchMessages();
     }
   }, [selectedChatData?._id, setSelectedChatMessages]);
+
+  // Decrypt messages when they change
+  useEffect(() => {
+    const decryptMessages = async () => {
+      const newDecryptedMessages = new Map(decryptedMessages);
+      
+      for (const message of selectedChatMessages) {
+        if (isMessageEncrypted(message) && !newDecryptedMessages.has(message._id)) {
+          try {
+            // First, decrypt the session key if we don't have it
+            if (message.encryptedSessionKey && message.sessionKeyId) {
+              const conversationId = [message.sender, message.receiver].sort().join('-');
+              await decryptSessionKeyFromSender(
+                message.encryptedSessionKey,
+                message.sessionKeyId,
+                conversationId
+              );
+            }
+
+            // Then decrypt the message
+            const decrypted = await decryptMessage({
+              ciphertext: message.message || '',
+              iv: message.iv || '',
+              sessionKeyId: message.sessionKeyId || '',
+            });
+
+            if (decrypted) {
+              newDecryptedMessages.set(message._id, decrypted);
+            }
+          } catch (error) {
+            console.error('Failed to decrypt message:', error);
+            newDecryptedMessages.set(message._id, '[Decryption failed]');
+          }
+        }
+      }
+      
+      setDecryptedMessages(newDecryptedMessages);
+    };
+
+    if (selectedChatMessages.length > 0) {
+      decryptMessages();
+    }
+  }, [selectedChatMessages, isMessageEncrypted, decryptMessage, decryptSessionKeyFromSender]);
+
+  const getMessageContent = (message: Message): string => {
+    if (isMessageEncrypted(message)) {
+      return decryptedMessages.get(message._id) || '[Decrypting...]';
+    }
+    return message.message || '';
+  };
 
   const renderMessages = () => {
     let lastDate = "";
@@ -66,7 +119,7 @@ export default function Messages() {
                     : "bg-white text-black text-left"
                 } inline-block shadow rounded-xl break-words p-3 my-0.5`}
               >
-                {message.message}
+                {getMessageContent(message)}
               </div>
             )}
             {message.messageType === "gif" && (

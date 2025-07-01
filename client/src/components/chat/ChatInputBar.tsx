@@ -3,6 +3,7 @@ import EmojiPicker from "emoji-picker-react";
 import useAppStore from "../../store";
 import { cn } from "../../lib/utils";
 import { useSocket } from "../../contexts/useSocket";
+import { useCrypto } from "../../hooks/useCrypto";
 
 // icons
 import { RiEmojiStickerLine } from "react-icons/ri";
@@ -33,6 +34,7 @@ interface GiphyResponse {
 
 export default function ChatInputBar() {
   const { selectedChatData, userData } = useAppStore();
+  const { encryptMessage, canEncrypt } = useCrypto();
   const [emojiPicker, setEmojiPicker] = useState(false);
   const [gifPicker, setGifPicker] = useState(false);
   const [message, setMessage] = useState("");
@@ -370,12 +372,42 @@ export default function ChatInputBar() {
       return; // Don't send empty messages
     }
 
-    socket?.emit("sendMessage", {
+    let messageData: any = {
       sender: userData._id,
       receiver: selectedChatData._id,
-      message,
       messageType: "text",
-    });
+    };
+
+    // Try to encrypt the message if crypto is available
+    if (canEncrypt) {
+      try {
+        const encryptionResult = await encryptMessage(message, selectedChatData._id);
+        if (encryptionResult) {
+          messageData = {
+            ...messageData,
+            message: encryptionResult.encrypted.ciphertext,
+            encrypted: true,
+            sessionKeyId: encryptionResult.encrypted.sessionKeyId,
+            encryptedSessionKey: encryptionResult.encryptedSessionKey,
+            iv: encryptionResult.encrypted.iv,
+          };
+        } else {
+          // Fallback to unencrypted if encryption fails
+          messageData.message = message;
+          messageData.encrypted = false;
+        }
+      } catch (error) {
+        console.error("Encryption failed, sending unencrypted:", error);
+        messageData.message = message;
+        messageData.encrypted = false;
+      }
+    } else {
+      // Send unencrypted if crypto not available
+      messageData.message = message;
+      messageData.encrypted = false;
+    }
+
+    socket?.emit("sendMessage", messageData);
     setMessage("");
     
     // Maintain focus on the input after sending

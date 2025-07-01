@@ -1,5 +1,6 @@
 import { createAuthSlice } from "../store/slices/authSlice";
 import { createChatSlice } from "../store/slices/chatSlice";
+import { createCryptoSlice } from "../store/slices/cryptoSlice";
 
 export type User = {
   _id?: string;
@@ -24,7 +25,9 @@ export type SetChat = (
 
 export type ChatSlice = ReturnType<typeof createChatSlice>;
 
-export type AppState = AuthSlice & ChatSlice;
+export type CryptoSlice = ReturnType<typeof createCryptoSlice>;
+
+export type AppState = AuthSlice & ChatSlice & CryptoSlice;
 
 export type Contact = {
   email: string;
@@ -44,4 +47,8 @@ export type Message = {
   message?: string;
   fileUrl?: string;
   timestamp: string;
+  encrypted?: boolean;
+  sessionKeyId?: string;
+  encryptedSessionKey?: string;
+  iv?: string;
 };
