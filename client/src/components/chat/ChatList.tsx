@@ -11,9 +11,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "../../components/ui/dropdown-menu";
+import NotificationBadge from "../../components/ui/notification-badge";
+import NotificationSettings from "../../components/ui/notification-settings";
 import { Contact } from "../../types";
 import { GET_CONTACTS, SEARCH_ROUTE } from "../../constants";
 import { apiClient } from "../../utils/apiClient";
+import { notificationManager } from "../../utils/notifications";
 import useAppStore from "../../store";
 
 import Cookies from "js-cookie";
@@ -24,7 +27,35 @@ export default function ChatList() {
   const [searchList, setSearchList] = useState<Contact[]>([]);
   const [searchResLoading, setSearchResLoading] = useState(false);
   const [contactList, setContactList] = useState<Contact[]>([]);
+  const [unreadCounts, setUnreadCounts] = useState<Map<string, number>>(new Map());
+  const [showNotificationSettings, setShowNotificationSettings] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
+
+  // Request notification permissions on component mount
+  useEffect(() => {
+    const requestPermissions = async () => {
+      await notificationManager.requestPermissions();
+    };
+    requestPermissions();
+  }, []);
+
+  // Update unread counts when they change
+  useEffect(() => {
+    const updateUnreadCounts = () => {
+      const counts = new Map<string, number>();
+      contactList.forEach(contact => {
+        const count = notificationManager.getUnreadCount(contact._id);
+        if (count > 0) {
+          counts.set(contact._id, count);
+        }
+      });
+      setUnreadCounts(counts);
+    };
+
+    // Update counts every second to keep them in sync
+    const interval = setInterval(updateUnreadCounts, 1000);
+    return () => clearInterval(interval);
+  }, [contactList]);
 
   const handleContactSearch = async (searchTerm: string) => {
     try {
@@ -70,6 +101,9 @@ export default function ChatList() {
       searchInputRef.current.value = "";
     }
     setSelectedChatData(contact);
+    
+    // Mark chat as read when selected
+    notificationManager.markChatAsRead(contact._id);
   };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -122,134 +156,173 @@ export default function ChatList() {
   };
 
   return (
-    <aside className="h-full">
-      <header className="p-3 border-b flex justify-between items-center bg-white sticky top-0 z-10">
-        <h1 className="text-3xl font-extrabold text-[#615ef0]">
-          <Link to="/">Chatox</Link>
-        </h1>
+    <>
+      <aside className="h-full">
+        <header className="p-3 border-b flex justify-between items-center bg-white sticky top-0 z-10">
+          <h1 className="text-3xl font-extrabold text-[#615ef0]">
+            <Link to="/">Chatox</Link>
+          </h1>
 
-        <DropdownMenu>
-          <DropdownMenuTrigger className="outline-none">
-            {userData?.profilePicture ? (
-              <img
-                src={userData?.profilePicture}
-                alt={userData?.name}
-                className="w-7 h-7 rounded-full"
+          <DropdownMenu>
+            <DropdownMenuTrigger className="outline-none relative">
+              {userData?.profilePicture ? (
+                <img
+                  src={userData?.profilePicture}
+                  alt={userData?.name}
+                  className="w-7 h-7 rounded-full"
+                />
+              ) : (
+                <div className="rounded-full border p-2">
+                  <TiUser className="h-7 w-7 text-gray-500" />
+                </div>
+              )}
+              {/* Show total unread count on profile icon */}
+              <NotificationBadge 
+                count={notificationManager.getTotalUnreadCount()} 
+                className="absolute -top-1 -right-1"
+                size="sm"
               />
-            ) : (
-              <div className="rounded-full border p-2">
-                <TiUser className="h-7 w-7 text-gray-500" />
-              </div>
-            )}
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuItem>
-              <Link to={`/${userData?.userName}`} className="w-full text-left">
-                Profile
-              </Link>
-            </DropdownMenuItem>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem>
+                <Link to={`/${userData?.userName}`} className="w-full text-left">
+                  Profile
+                </Link>
+              </DropdownMenuItem>
 
-            <DropdownMenuItem>
-              <Link to="/settings" className="w-full text-left">
-                Settings
-              </Link>
-            </DropdownMenuItem>
+              <DropdownMenuItem>
+                <button 
+                  className="w-full text-left" 
+                  onClick={() => setShowNotificationSettings(true)}
+                >
+                  Notification Settings
+                </button>
+              </DropdownMenuItem>
 
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <button className="w-full text-left" onClick={logout}>
-                Logout
-              </button>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </header>
+              <DropdownMenuItem>
+                <Link to="/settings" className="w-full text-left">
+                  Settings
+                </Link>
+              </DropdownMenuItem>
 
-      {/* search bar */}
-      <div className="m-3 px-3 py-4 rounded-xl flex gap-2 text-[#929292] items-center bg-[#f3f3f3]">
-        <HiMiniMagnifyingGlass className="text-2xl shrink-0" />
-        <input
-          id="contact-search"
-          type="text"
-          placeholder="Search contacts"
-          className="w-full outline-none bg-transparent"
-          onChange={(e: ChangeEvent<HTMLInputElement>) => handleContactSearch(e.target.value)}
-          onKeyDown={handleKeyDown}
-          ref={searchInputRef}
-        />
-        {searchDropDown && (
-          <button className="group" onClick={clearSearch}>
-            <ImCross className="text-xl text-gray-400 shrink-0 group-hover:text-red-500" />
-          </button>
-        )}
-      </div>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>
+                <button className="w-full text-left" onClick={logout}>
+                  Logout
+                </button>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </header>
 
-      <div className="flex-1 overflow-y-auto">
-        {searchDropDown ? (
-          <>
-            {searchResLoading && <div>Loading...</div>}
-            {searchList?.map((contact) => (
-              <div
-                key={contact._id}
-                className="flex p-3 border-b items-center gap-3 cursor-pointer hover:bg-gray-50"
-                onClick={() => selectContact(contact)}
-              >
-                <div>
-                  {contact.profilePicture ? (
-                    <img
-                      src={contact.profilePicture}
-                      alt={contact.name}
-                      className="w-10 h-10 rounded-full"
+        {/* search bar */}
+        <div className="m-3 px-3 py-4 rounded-xl flex gap-2 text-[#929292] items-center bg-[#f3f3f3]">
+          <HiMiniMagnifyingGlass className="text-2xl shrink-0" />
+          <input
+            id="contact-search"
+            type="text"
+            placeholder="Search contacts"
+            className="w-full outline-none bg-transparent"
+            onChange={(e: ChangeEvent<HTMLInputElement>) => handleContactSearch(e.target.value)}
+            onKeyDown={handleKeyDown}
+            ref={searchInputRef}
+          />
+          {searchDropDown && (
+            <button className="group" onClick={clearSearch}>
+              <ImCross className="text-xl text-gray-400 shrink-0 group-hover:text-red-500" />
+            </button>
+          )}
+        </div>
+
+        <div className="flex-1 overflow-y-auto">
+          {searchDropDown ? (
+            <>
+              {searchResLoading && <div>Loading...</div>}
+              {searchList?.map((contact) => (
+                <div
+                  key={contact._id}
+                  className="flex p-3 border-b items-center gap-3 cursor-pointer hover:bg-gray-50"
+                  onClick={() => selectContact(contact)}
+                >
+                  <div className="relative">
+                    {contact.profilePicture ? (
+                      <img
+                        src={contact.profilePicture}
+                        alt={contact.name}
+                        className="w-10 h-10 rounded-full"
+                      />
+                    ) : (
+                      <div className="rounded-full border p-2">
+                        <TiUser className="h-10 w-10 text-gray-500" />
+                      </div>
+                    )}
+                    {/* Show unread count for search results */}
+                    <NotificationBadge 
+                      count={notificationManager.getUnreadCount(contact._id)} 
+                      className="absolute -top-1 -right-1"
+                      size="sm"
                     />
-                  ) : (
-                    <div className="rounded-full border p-2">
-                      <TiUser className="h-10 w-10 text-gray-500" />
-                    </div>
-                  )}
-                </div>
-
-                <div>
-                  <p className="text-lg">{contact.name}</p>
-                  <p className="text-gray-500 text-sm">@{contact.userName}</p>
-                </div>
-              </div>
-            ))}
-          </>
-        ) : (
-          <div>
-            {contactList.map((contact: Contact) => (
-              <div
-                key={contact._id}
-                className={`flex justify-between p-3 my-5 items-center cursor-pointer hover:bg-gray-50 rounded-xl mx-3 ${
-                  selectedChatData?._id === contact._id && "bg-[#f6f6fe]"
-                }`}
-                onClick={() => setSelectedChatData(contact)}
-              >
-                <div className="flex gap-3 items-center">
-                  {contact.profilePicture ? (
-                    <img
-                      src={contact.profilePicture}
-                      alt={contact.name}
-                      className="w-10 h-10 rounded-xl"
-                    />
-                  ) : (
-                    <TiUser className="text-4xl shrink-0" />
-                  )}
+                  </div>
 
                   <div>
                     <p className="text-lg">{contact.name}</p>
-                    <p className="text-[#999999]">{contact.lastMessage}</p>
+                    <p className="text-gray-500 text-sm">@{contact.userName}</p>
                   </div>
                 </div>
+              ))}
+            </>
+          ) : (
+            <div>
+              {contactList.map((contact: Contact) => (
+                <div
+                  key={contact._id}
+                  className={`flex justify-between p-3 my-5 items-center cursor-pointer hover:bg-gray-50 rounded-xl mx-3 ${
+                    selectedChatData?._id === contact._id && "bg-[#f6f6fe]"
+                  }`}
+                  onClick={() => selectContact(contact)}
+                >
+                  <div className="flex gap-3 items-center">
+                    <div className="relative">
+                      {contact.profilePicture ? (
+                        <img
+                          src={contact.profilePicture}
+                          alt={contact.name}
+                          className="w-10 h-10 rounded-xl"
+                        />
+                      ) : (
+                        <TiUser className="text-4xl shrink-0" />
+                      )}
+                      {/* Show unread count for each contact */}
+                      <NotificationBadge 
+                        count={notificationManager.getUnreadCount(contact._id)} 
+                        className="absolute -top-1 -right-1"
+                        size="sm"
+                      />
+                    </div>
 
-                <p className="text-[#999999]">
-                  {formatLastMessageTime(contact.lastMessageTime)}
-                </p>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-    </aside>
+                    <div>
+                      <p className="text-lg">{contact.name}</p>
+                      <p className="text-[#999999]">{contact.lastMessage}</p>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col items-end gap-1">
+                    <p className="text-[#999999]">
+                      {formatLastMessageTime(contact.lastMessageTime)}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </aside>
+
+      {/* Notification Settings Modal */}
+      <NotificationSettings
+        isOpen={showNotificationSettings}
+        onClose={() => setShowNotificationSettings(false)}
+      />
+    </>
   );
 }

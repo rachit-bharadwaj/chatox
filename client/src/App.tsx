@@ -19,6 +19,9 @@ import { apiClient } from "./utils/apiClient";
 // shadcn
 import { Toaster } from "./components/ui/sonner";
 
+// components
+import NotificationBanner from "./components/ui/notification-banner";
+
 function App() {
   const token = Cookies.get("token");
 
@@ -53,6 +56,9 @@ function App() {
 
   return (
     <>
+      {/* Notification Permission Banner */}
+      <NotificationBanner />
+      
       <Routes>
         <Route
           path="/"

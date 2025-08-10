@@ -2,6 +2,7 @@
 import { createContext, ReactNode, useEffect, useRef } from "react";
 import { io, Socket } from "socket.io-client";
 import { HOST } from "../constants";
+import { notificationManager } from "../utils/notifications";
 import useAppStore from "../store";
 
 interface SocketContextType {
@@ -27,12 +28,27 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
           return;
         }
 
-        if (
-          selectedChatData &&
-          (selectedChatData._id === message.sender._id ||
-            selectedChatData._id === message.receiver._id)
-        ) {
+        // Check if this message is for the current user
+        if (message.receiver._id === userData._id) {
+          // Add message to store
           addMessage(message);
+
+          // Show notification if message is not from currently selected chat
+          if (
+            !selectedChatData ||
+            selectedChatData._id !== message.sender._id
+          ) {
+            // Get sender name for notification
+            const senderName = message.sender.name || message.sender.userName || 'Someone';
+            const messageText = message.messageType === 'text' ? message.message : 'Sent you a GIF';
+            
+            // Trigger notification
+            notificationManager.notifyNewMessage(
+              senderName,
+              messageText,
+              message.sender._id
+            );
+          }
         }
       };
 
