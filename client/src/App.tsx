@@ -40,19 +40,29 @@ function App() {
         setLoading(false);
       } catch (error) {
         console.log(error);
-      } finally {
         setLoading(false);
       }
     };
 
-    if (userData._id) return;
-
-    if (token && !userData._id) {
+    // Only fetch user if we have a token and no user data
+    if (token && (!userData || !userData._id)) {
+      setLoading(true);
       fetchUser();
+    } else if (!token) {
+      setLoading(false);
     }
-  }, [token, userData._id, setUserData]);
+  }, [token, userData, setUserData]);
 
-  if (loading) return null;
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>

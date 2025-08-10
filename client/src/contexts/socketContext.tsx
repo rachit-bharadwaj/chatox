@@ -16,7 +16,7 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
   const { userData, selectedChatData, addMessage } = useAppStore();
 
   useEffect(() => {
-    if (userData._id) {
+    if (userData && userData._id) {
       socket.current = io(HOST, {
         withCredentials: true,
         query: { userId: userData._id },

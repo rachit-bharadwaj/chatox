@@ -1,10 +1,8 @@
 export const PRODUCTION = import.meta.env.MODE === "production";
 
-export const HOST = PRODUCTION ? "" : import.meta.env.VITE_SERVER_URL;
-
-if (!HOST) {
-  throw new Error("VITE_SERVER_URL is not set");
-}
+// In production, use relative URLs (empty string for same origin)
+// In development, use the VITE_SERVER_URL or fallback to localhost
+export const HOST = PRODUCTION ? "" : (import.meta.env.VITE_SERVER_URL || "http://localhost:5000");
 
 // routes
 export const AUTH_ROUTES = `${HOST}/api/auth`;
