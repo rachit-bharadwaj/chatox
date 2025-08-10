@@ -1,6 +1,10 @@
-export const PRODUCTION = import.meta.env.PRODUCTION;
+export const PRODUCTION = import.meta.env.MODE === "production";
 
-export const HOST = PRODUCTION ? "/" : import.meta.env.VITE_SERVER_URL;
+export const HOST = PRODUCTION ? "" : import.meta.env.VITE_SERVER_URL;
+
+if (!HOST) {
+  throw new Error("VITE_SERVER_URL is not set");
+}
 
 // routes
 export const AUTH_ROUTES = `${HOST}/api/auth`;
