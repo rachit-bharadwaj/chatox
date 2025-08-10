@@ -3,7 +3,6 @@ import { notificationManager } from "../../utils/notifications";
 
 export default function NotificationBanner() {
   const [showBanner, setShowBanner] = useState(false);
-  const [permissionStatus, setPermissionStatus] = useState<string>('default');
 
   useEffect(() => {
     // Check if we should show the banner
@@ -16,18 +15,15 @@ export default function NotificationBanner() {
 
     if (shouldShowBanner()) {
       setShowBanner(true);
-      setPermissionStatus('default');
     }
   }, []);
 
   const handleEnableNotifications = async () => {
     const granted = await notificationManager.requestPermissions();
     if (granted) {
-      setPermissionStatus('granted');
       setShowBanner(false);
       localStorage.setItem('notification-banner-shown', 'true');
     } else {
-      setPermissionStatus('denied');
       setShowBanner(false);
       localStorage.setItem('notification-banner-shown', 'true');
     }

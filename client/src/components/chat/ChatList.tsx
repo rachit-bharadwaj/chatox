@@ -27,7 +27,6 @@ export default function ChatList() {
   const [searchList, setSearchList] = useState<Contact[]>([]);
   const [searchResLoading, setSearchResLoading] = useState(false);
   const [contactList, setContactList] = useState<Contact[]>([]);
-  const [unreadCounts, setUnreadCounts] = useState<Map<string, number>>(new Map());
   const [showNotificationSettings, setShowNotificationSettings] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
@@ -39,23 +38,7 @@ export default function ChatList() {
     requestPermissions();
   }, []);
 
-  // Update unread counts when they change
-  useEffect(() => {
-    const updateUnreadCounts = () => {
-      const counts = new Map<string, number>();
-      contactList.forEach(contact => {
-        const count = notificationManager.getUnreadCount(contact._id);
-        if (count > 0) {
-          counts.set(contact._id, count);
-        }
-      });
-      setUnreadCounts(counts);
-    };
-
-    // Update counts every second to keep them in sync
-    const interval = setInterval(updateUnreadCounts, 1000);
-    return () => clearInterval(interval);
-  }, [contactList]);
+  // Remove unused unreadCounts state and useEffect
 
   const handleContactSearch = async (searchTerm: string) => {
     try {

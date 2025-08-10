@@ -38,10 +38,8 @@ export default function NotificationSettings({ isOpen, onClose }: NotificationSe
   };
 
   const handleTestSound = () => {
-    // Import and use the notification manager's sound
-    const { NotificationSound } = require('../../utils/notifications');
-    const testSound = new NotificationSound();
-    testSound.play();
+    // Use the notification manager's test sound method
+    notificationManager.testSound();
   };
 
   if (!isOpen) return null;

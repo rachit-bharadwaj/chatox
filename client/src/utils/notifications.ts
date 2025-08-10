@@ -254,6 +254,16 @@ class NotificationManager {
   getPermissionStatus() {
     return this.pushNotifications.getPermissionStatus();
   }
+
+  // Show a test notification (for testing purposes)
+  async showNotification(title: string, options: NotificationOptions = {}) {
+    return await this.pushNotifications.showNotification(title, options);
+  }
+
+  // Test sound (for testing purposes)
+  testSound() {
+    this.sound.play();
+  }
 }
 
 // Create and export singleton instance
