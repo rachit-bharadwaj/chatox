@@ -122,8 +122,8 @@ export default function ChatList() {
   };
 
   return (
-    <aside>
-      <header className="p-3 border-b flex justify-between items-center">
+    <aside className="h-full">
+      <header className="p-3 border-b flex justify-between items-center bg-white sticky top-0 z-10">
         <h1 className="text-3xl font-extrabold text-[#615ef0]">
           <Link to="/">Chatox</Link>
         </h1>
@@ -184,70 +184,72 @@ export default function ChatList() {
         )}
       </div>
 
-      {searchDropDown ? (
-        <>
-          {searchResLoading && <div>Loading...</div>}
-          {searchList?.map((contact) => (
-            <div
-              key={contact._id}
-              className="flex p-3 border-b items-center gap-3 cursor-pointer hover:bg-gray-50"
-              onClick={() => selectContact(contact)}
-            >
-              <div>
-                {contact.profilePicture ? (
-                  <img
-                    src={contact.profilePicture}
-                    alt={contact.name}
-                    className="w-10 h-10 rounded-full"
-                  />
-                ) : (
-                  <div className="rounded-full border p-2">
-                    <TiUser className="h-10 w-10 text-gray-500" />
-                  </div>
-                )}
-              </div>
-
-              <div>
-                <p className="text-lg">{contact.name}</p>
-                <p className="text-gray-500 text-sm">@{contact.userName}</p>
-              </div>
-            </div>
-          ))}
-        </>
-      ) : (
-        <div>
-          {contactList.map((contact: Contact) => (
-            <div
-              key={contact._id}
-              className={`flex justify-between p-3 my-5 items-center cursor-pointer hover:bg-gray-50 rounded-xl mx-3 ${
-                selectedChatData?._id === contact._id && "bg-[#f6f6fe]"
-              }`}
-              onClick={() => setSelectedChatData(contact)}
-            >
-              <div className="flex gap-3 items-center">
-                {contact.profilePicture ? (
-                  <img
-                    src={contact.profilePicture}
-                    alt={contact.name}
-                    className="w-10 h-10 rounded-xl"
-                  />
-                ) : (
-                  <TiUser className="text-4xl shrink-0" />
-                )}
+      <div className="flex-1 overflow-y-auto">
+        {searchDropDown ? (
+          <>
+            {searchResLoading && <div>Loading...</div>}
+            {searchList?.map((contact) => (
+              <div
+                key={contact._id}
+                className="flex p-3 border-b items-center gap-3 cursor-pointer hover:bg-gray-50"
+                onClick={() => selectContact(contact)}
+              >
+                <div>
+                  {contact.profilePicture ? (
+                    <img
+                      src={contact.profilePicture}
+                      alt={contact.name}
+                      className="w-10 h-10 rounded-full"
+                    />
+                  ) : (
+                    <div className="rounded-full border p-2">
+                      <TiUser className="h-10 w-10 text-gray-500" />
+                    </div>
+                  )}
+                </div>
 
                 <div>
                   <p className="text-lg">{contact.name}</p>
-                  <p className="text-[#999999]">{contact.lastMessage}</p>
+                  <p className="text-gray-500 text-sm">@{contact.userName}</p>
                 </div>
               </div>
+            ))}
+          </>
+        ) : (
+          <div>
+            {contactList.map((contact: Contact) => (
+              <div
+                key={contact._id}
+                className={`flex justify-between p-3 my-5 items-center cursor-pointer hover:bg-gray-50 rounded-xl mx-3 ${
+                  selectedChatData?._id === contact._id && "bg-[#f6f6fe]"
+                }`}
+                onClick={() => setSelectedChatData(contact)}
+              >
+                <div className="flex gap-3 items-center">
+                  {contact.profilePicture ? (
+                    <img
+                      src={contact.profilePicture}
+                      alt={contact.name}
+                      className="w-10 h-10 rounded-xl"
+                    />
+                  ) : (
+                    <TiUser className="text-4xl shrink-0" />
+                  )}
 
-              <p className="text-[#999999]">
-                {formatLastMessageTime(contact.lastMessageTime)}
-              </p>
-            </div>
-          ))}
-        </div>
-      )}
+                  <div>
+                    <p className="text-lg">{contact.name}</p>
+                    <p className="text-[#999999]">{contact.lastMessage}</p>
+                  </div>
+                </div>
+
+                <p className="text-[#999999]">
+                  {formatLastMessageTime(contact.lastMessageTime)}
+                </p>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </aside>
   );
 }

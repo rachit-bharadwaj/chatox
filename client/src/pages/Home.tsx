@@ -96,14 +96,16 @@ export default function Home() {
     <>
       <ResizablePanelGroup
         direction="horizontal"
-        className="min-h-screen overflow-hidden w-full items-stretch"
+        className="min-h-screen w-full items-stretch"
         onLayout={handleLayoutChange}
       >
-        <ResizablePanel minSize={35} defaultSize={chatLayoutSize[0]}>
-          <ChatList />
+        <ResizablePanel minSize={35} defaultSize={chatLayoutSize[0]} className="overflow-hidden">
+          <div className="h-screen overflow-y-auto">
+            <ChatList />
+          </div>
         </ResizablePanel>
         <ResizableHandle withHandle />
-        <ResizablePanel minSize={45} defaultSize={chatLayoutSize[1]}>
+        <ResizablePanel minSize={45} defaultSize={chatLayoutSize[1]} className="overflow-hidden">
           <ChatScreen>
             <ChatScreenHeader />
             <Messages />
