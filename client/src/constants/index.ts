@@ -1,8 +1,18 @@
+// Debug logging to help identify the issue
+console.log('Constants file loading...');
+console.log('MODE:', import.meta.env.MODE);
+console.log('VITE_SERVER_URL:', import.meta.env.VITE_SERVER_URL);
+console.log('PRODUCTION:', import.meta.env.MODE === "production");
+
 export const PRODUCTION = import.meta.env.MODE === "production";
 
 // In production, use relative URLs (empty string for same origin)
 // In development, use the VITE_SERVER_URL or fallback to localhost
-export const HOST = PRODUCTION ? "" : (import.meta.env.VITE_SERVER_URL || "http://localhost:5000");
+// Make sure to handle undefined VITE_SERVER_URL gracefully
+const serverUrl = import.meta.env.VITE_SERVER_URL;
+export const HOST = PRODUCTION ? "" : (serverUrl || "http://localhost:5000");
+
+console.log('HOST resolved to:', HOST);
 
 // routes
 export const AUTH_ROUTES = `${HOST}/api/auth`;
