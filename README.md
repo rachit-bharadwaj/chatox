@@ -25,8 +25,8 @@ Chatox is a web-based real-time chatting platform where users can register, sear
 
 ## Live Demo and Source Code
 
-- **Live URL:** [https://chatox-vzh5.onrender.com](https://chatox-vzh5.onrender.com)
-- **GitHub URL:** [https://github.com/rachit-bharadwaj/chatox](https://github.com/rachit-bharadwaj/chatox)
+- **Live URL:** [chatox.rachitbharadwaj.in](https://chatox.rachitbharadwaj.in)
+- **GitHub URL:** [github.com/rachit-bharadwaj/chatox](https://github.com/rachit-bharadwaj/chatox)
 
 ## Technologies Used
 
